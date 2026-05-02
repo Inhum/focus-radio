@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Space Invaders</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; color: #0f0;
+               font-family: 'Courier New', monospace; overflow: hidden; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  canvas { background: #000; border: 2px solid #0f0; image-rendering: pixelated; }
+  #hud { margin-bottom: 8px; letter-spacing: 2px; }
+  #msg { position: absolute; color: #0f0; font-size: 28px; text-align: center;
+         text-shadow: 0 0 8px #0f0; pointer-events: none; }
+</style>
+</head>
+<body>
+  <div id="hud">SCORE: <span id="score">0</span> &nbsp; LIVES: <span id="lives">3</span></div>
+  <canvas id="game" width="640" height="480"></canvas>
+  <div id="msg"></div>
+<script>
+// === Простая реализация Space Invaders на Canvas ===
+
+// --- Звук через Web Audio API ---
+let audioCtx = null;
+function getAudio() {
+  // Контекст создаётся по первому действию пользователя (требование браузеров)
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function beep(freq, duration, type = 'square', gain = 0.08, freqEnd = null) {
+  const ac = getAudio();
+  const osc = ac.createOscillator();
+  const g = ac.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, ac.currentTime);
+  if (freqEnd !== null) osc.frequency.exponentialRampToValueAtTime(freqEnd, ac.currentTime + duration);
+  g.gain.setValueAtTime(gain, ac.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + duration);
+  osc.connect(g).connect(ac.destination);
+  osc.start();
+  osc.stop(ac.currentTime + duration);
+}
+function noiseBurst(duration, gain = 0.15) {
+  // Короткий шум — для взрывов
+  const ac = getAudio();
+  const buf = ac.createBuffer(1, ac.sampleRate * duration, ac.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+  const src = ac.createBufferSource();
+  const g = ac.createGain();
+  g.gain.value = gain;
+  src.buffer = buf;
+  src.connect(g).connect(ac.destination);
+  src.start();
+}
+const sfx = {
+  shoot:     () => beep(880, 0.08, 'square', 0.06, 220),
+  enemyHit:  () => noiseBurst(0.15, 0.12),
+  playerHit: () => { noiseBurst(0.4, 0.2); beep(120, 0.4, 'sawtooth', 0.1, 40); },
+  win:       () => { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.18, 'square', 0.08), i * 120)); },
+  lose:      () => { [400, 300, 200, 100].forEach((f, i) => setTimeout(() => beep(f, 0.25, 'sawtooth', 0.1), i * 150)); },
+  step:      (high) => beep(high ? 160 : 120, 0.06, 'square', 0.05) // марш строя
+};
+
+const cvs = document.getElementById('game');
+const ctx = cvs.getContext('2d');
+const W = cvs.width, H = cvs.height;
+const scoreEl = document.getElementById('score');
+const livesEl = document.getElementById('lives');
+const msgEl   = document.getElementById('msg');
+
+// Состояние игры
+let score = 0, lives = 3, gameOver = false, won = false;
+
+// Игрок
+const player = { x: W/2 - 20, y: H - 40, w: 40, h: 16, speed: 5, cooldown: 0 };
+
+// Снаряды игрока и врагов
+const bullets = [];      // пули игрока
+const enemyBullets = []; // пули пришельцев
+
+// Сетка пришельцев
+const ROWS = 4, COLS = 10;
+const enemies = [];
+const ENEMY_W = 32, ENEMY_H = 20, GAP_X = 16, GAP_Y = 14;
+const GRID_LEFT = (W - (COLS * ENEMY_W + (COLS - 1) * GAP_X)) / 2;
+
+function spawnEnemies() {
+  enemies.length = 0;
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      enemies.push({
+        x: GRID_LEFT + c * (ENEMY_W + GAP_X),
+        y: 50 + r * (ENEMY_H + GAP_Y),
+        w: ENEMY_W, h: ENEMY_H,
+        alive: true,
+        points: (ROWS - r) * 10
+      });
+    }
+  }
+}
+spawnEnemies();
+
+// Движение строя
+let enemyDir = 1;       // 1 = вправо, -1 = влево
+let enemySpeed = 0.6;   // пикселей за кадр (по горизонтали)
+let stepDown = 0;       // оставшийся шаг вниз
+const STEP_SIZE = 16;
+let stepTimer = 0;      // таймер для звука "марша"
+let stepHigh = false;   // чередование двух тонов
+
+// Управление с клавиатуры
+const keys = {};
+window.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'Space') e.preventDefault();
+  if (gameOver && (e.code === 'Enter' || e.code === 'Space')) restart();
+});
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+function shoot() {
+  if (player.cooldown > 0) return;
+  bullets.push({ x: player.x + player.w/2 - 2, y: player.y - 8, w: 4, h: 10 });
+  player.cooldown = 18; // задержка между выстрелами
+  sfx.shoot();
+}
+
+function rectsOverlap(a, b) {
+  return a.x < b.x + b.w && a.x + a.w > b.x &&
+         a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+function update() {
+  if (gameOver) return;
+
+  // Движение игрока
+  if (keys['ArrowLeft']  || keys['KeyA']) player.x -= player.speed;
+  if (keys['ArrowRight'] || keys['KeyD']) player.x += player.speed;
+  player.x = Math.max(0, Math.min(W - player.w, player.x));
+  if (keys['Space']) shoot();
+  if (player.cooldown > 0) player.cooldown--;
+
+  // Пули игрока
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    bullets[i].y -= 8;
+    if (bullets[i].y + bullets[i].h < 0) bullets.splice(i, 1);
+  }
+
+  // Звук "марша": интервал зависит от скорости (классика — чем меньше врагов, тем быстрее)
+  stepTimer--;
+  if (stepTimer <= 0) {
+    sfx.step(stepHigh);
+    stepHigh = !stepHigh;
+    stepTimer = Math.max(8, Math.floor(40 / enemySpeed));
+  }
+
+  // Движение пришельцев: либо шаг вниз, либо горизонтально
+  if (stepDown > 0) {
+    const dy = Math.min(2, stepDown);
+    enemies.forEach(e => { if (e.alive) e.y += dy; });
+    stepDown -= dy;
+  } else {
+    let hitEdge = false;
+    enemies.forEach(e => {
+      if (!e.alive) return;
+      e.x += enemyDir * enemySpeed;
+      if (e.x <= 0 || e.x + e.w >= W) hitEdge = true;
+    });
+    if (hitEdge) {
+      enemyDir *= -1;
+      stepDown = STEP_SIZE;
+    }
+  }
+
+  // Случайные выстрелы пришельцев
+  const aliveEnemies = enemies.filter(e => e.alive);
+  if (aliveEnemies.length && Math.random() < 0.02) {
+    const shooter = aliveEnemies[Math.floor(Math.random() * aliveEnemies.length)];
+    enemyBullets.push({ x: shooter.x + shooter.w/2 - 2, y: shooter.y + shooter.h, w: 4, h: 10 });
+  }
+
+  // Пули пришельцев
+  for (let i = enemyBullets.length - 1; i >= 0; i--) {
+    enemyBullets[i].y += 5;
+    if (enemyBullets[i].y > H) { enemyBullets.splice(i, 1); continue; }
+    if (rectsOverlap(enemyBullets[i], player)) {
+      enemyBullets.splice(i, 1);
+      lives--;
+      livesEl.textContent = lives;
+      sfx.playerHit();
+      if (lives <= 0) endGame(false);
+    }
+  }
+
+  // Столкновения пуль игрока с пришельцами
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    for (const e of enemies) {
+      if (!e.alive) continue;
+      if (rectsOverlap(bullets[i], e)) {
+        e.alive = false;
+        bullets.splice(i, 1);
+        score += e.points;
+        scoreEl.textContent = score;
+        sfx.enemyHit();
+        // ускоряем строй по мере уничтожения
+        enemySpeed = 0.6 + (1 - aliveEnemies.length / (ROWS * COLS)) * 2.4;
+        break;
+      }
+    }
+  }
+
+  // Условия конца игры
+  if (aliveEnemies.length === 0) endGame(true);
+  for (const e of enemies) {
+    if (e.alive && e.y + e.h >= player.y) { endGame(false); break; }
+  }
+}
+
+function drawShip(x, y, w, h) {
+  // Корпус игрока
+  ctx.fillStyle = '#0f0';
+  ctx.fillRect(x + w*0.1, y + h*0.5, w*0.8, h*0.5);
+  ctx.fillRect(x + w*0.3, y + h*0.2, w*0.4, h*0.3);
+  ctx.fillRect(x + w*0.45, y, w*0.1, h*0.25);
+}
+
+function drawEnemy(e) {
+  // Простой "пиксельный" пришелец
+  ctx.fillStyle = '#0f0';
+  const x = e.x, y = e.y, w = e.w, h = e.h;
+  ctx.fillRect(x + w*0.2, y, w*0.6, h*0.3);
+  ctx.fillRect(x, y + h*0.3, w, h*0.4);
+  ctx.fillRect(x + w*0.1, y + h*0.7, w*0.2, h*0.3);
+  ctx.fillRect(x + w*0.7, y + h*0.7, w*0.2, h*0.3);
+  // "глаза"
+  ctx.fillStyle = '#000';
+  ctx.fillRect(x + w*0.3, y + h*0.4, w*0.1, h*0.2);
+  ctx.fillRect(x + w*0.6, y + h*0.4, w*0.1, h*0.2);
+}
+
+function render() {
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, W, H);
+
+  // Игрок
+  drawShip(player.x, player.y, player.w, player.h);
+
+  // Пришельцы
+  enemies.forEach(e => { if (e.alive) drawEnemy(e); });
+
+  // Пули
+  ctx.fillStyle = '#0f0';
+  bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+  ctx.fillStyle = '#f44';
+  enemyBullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+
+  // Пол
+  ctx.fillStyle = '#0f0';
+  ctx.fillRect(0, H - 2, W, 2);
+}
+
+function endGame(victory) {
+  gameOver = true;
+  won = victory;
+  if (victory) sfx.win(); else sfx.lose();
+  msgEl.innerHTML = (victory ? 'ПОБЕДА!' : 'ИГРА ОКОНЧЕНА') +
+                    '<br><span style="font-size:18px">Нажмите Enter для перезапуска</span>';
+}
+
+function restart() {
+  score = 0; lives = 3; gameOver = false; won = false;
+  scoreEl.textContent = score;
+  livesEl.textContent = lives;
+  msgEl.textContent = '';
+  bullets.length = 0;
+  enemyBullets.length = 0;
+  enemyDir = 1; enemySpeed = 0.6; stepDown = 0;
+  player.x = W/2 - 20;
+  spawnEnemies();
+}
+
+// Главный цикл
+function loop() {
+  update();
+  render();
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+</html>

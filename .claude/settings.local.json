@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-CimInstance -ClassName Win32_LogicalDisk | Select-Object DeviceID, DriveType, VolumeName, @{N='SizeGB';E={[math]::Round\\($_.Size/1GB,1\\)}}, @{N='FreeGB';E={[math]::Round\\($_.FreeSpace/1GB,1\\)}})",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -v --max-time 3 --max-filesize 1024 https://ice2.somafm.com/synphaera-128-mp3)",
+      "Bash(grep -E \"[r]adio$|/radio \")",
+      "Bash(awk '{printf \"PID=%s CPU=%s%% RSS=%sMB\\\\n\", $2, $3, int\\($6/1024\\)}')",
+      "Bash(awk '{print $2, $9, $11}')",
+      "Bash(kill 95750)",
+      "Bash(awk '{print \"running:\", $2, $9}')",
+      "Bash(swiftc -O radio.swift -o radio)",
+      "Bash(./radio)",
+      "Bash(grep -E \"[r]adio$\")",
+      "Bash(awk '{printf \"PID=%s RSS=%sMB\\\\n\",$2,int\\($6/1024\\)}')",
+      "Bash(kill 96481)",
+      "Bash(curl -sL \"https://somafm.com/channels.json\")",
+      "Bash(kill 718)",
+      "Bash(./radio --test-all)",
+      "Bash(echo \"exit=$?\")",
+      "Bash(./radio --test-one 7)",
+      "Bash(./probe https://stream.radioparadise.com/mellow-128)"
+    ]
+  }
+}
