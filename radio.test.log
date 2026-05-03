@@ -1,223 +1,184 @@
-[12:11:25.013] PLS idx=0 Drone Zone -> 5 urls, first=https://ice6.somafm.com/dronezone-256-mp3
-[12:11:27.428] === SELF-TEST START: 14 stations ===
-[12:11:27.428] --- TEST [0] SomaFM / Drone Zone ---
-[12:11:27.473] CONNECT Drone Zone url[0]=https://ice6.somafm.com/dronezone-256-mp3
-[12:11:27.478] timeControlStatus=2 reason=nil
-[12:11:35.479] WATCHDOG Drone Zone url[0] timeout — t=0.0 status=2 err=nil
-[12:11:35.480] FALLBACK Drone Zone url[0] -> url[1]: watchdog
-[12:11:35.482] CONNECT Drone Zone url[1]=https://ice4.somafm.com/dronezone-256-mp3
-[12:11:35.482] timeControlStatus=2 reason=nil
-[12:11:43.482] WATCHDOG Drone Zone url[1] timeout — t=0.0 status=2 err=nil
-[12:11:43.483] FALLBACK Drone Zone url[1] -> url[2]: watchdog
-[12:11:43.484] CONNECT Drone Zone url[2]=https://ice2.somafm.com/dronezone-256-mp3
-[12:11:43.484] timeControlStatus=2 reason=nil
-[12:11:51.485] WATCHDOG Drone Zone url[2] timeout — t=0.0 status=2 err=nil
-[12:11:51.485] FALLBACK Drone Zone url[2] -> url[3]: watchdog
-[12:11:51.508] CONNECT Drone Zone url[3]=https://ice5.somafm.com/dronezone-256-mp3
-[12:11:51.509] timeControlStatus=2 reason=nil
-[12:11:53.162] acclog: uri=https://ice5.somafm.com/dronezone-256-mp3 bytes=836 bitrate=9864.959719863464
-[12:11:53.164] status=1 err=nil
-[12:11:54.011] PLAYING Drone Zone t=0.0 buffered=2.899591836734694 bytes=205636
-[12:11:54.480] RESULT [0] PASS Drone Zone t=0.00 elapsed=27.1s urlIdx=3
-[12:11:54.480] STOP
-[12:11:54.983] --- TEST [1] SomaFM / Deep Space One ---
-[12:15:01.660] RESULT [1] FAIL Deep Space One t=0.00 elapsed=186.7s urlIdx=0
-[12:15:01.660] STOP
-[12:15:02.161] --- TEST [2] SomaFM / Synphaera ---
-[12:15:03.600] PLS idx=3 FAIL err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={_kCFStreamErrorCodeKey=50, NSUnderlyingError=0x142ea2030 {Error Domain=kCFErrorDomainCFNetwork Code=-1009 "(null)" UserInfo={_NSURLErrorNWPathKey=unsatisfied (No network route), dns, _kCFStreamErrorCodeKey=50, _kCFStreamErrorDomainKey=1}}, _NSURLErrorFailingURLSessionTaskErrorKey=LocalDataTask <55E22DDB-51EA-4447-9A3A-AD8CC589A5C3>.<4>, _NSURLErrorRelatedURLSessionTaskErrorKey=(
-    "LocalDataTask <55E22DDB-51EA-4447-9A3A-AD8CC589A5C3>.<4>"
-), NSLocalizedDescription=The Internet connection appears to be offline., NSErrorFailingURLStringKey=https://api.somafm.com/missioncontrol130.pls, NSErrorFailingURLKey=https://api.somafm.com/missioncontrol130.pls, _kCFStreamErrorDomainKey=1})
-[12:15:03.600] PLS idx=4 FAIL err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={_kCFStreamErrorCodeKey=50, NSUnderlyingError=0x142e8a0d0 {Error Domain=kCFErrorDomainCFNetwork Code=-1009 "(null)" UserInfo={_NSURLErrorNWPathKey=unsatisfied (No network route), dns, _kCFStreamErrorCodeKey=50, _kCFStreamErrorDomainKey=1}}, _NSURLErrorFailingURLSessionTaskErrorKey=LocalDataTask <6B6C16C9-384B-457C-A1DA-D99D8EAFDB84>.<5>, _NSURLErrorRelatedURLSessionTaskErrorKey=(
-    "LocalDataTask <6B6C16C9-384B-457C-A1DA-D99D8EAFDB84>.<5>"
-), NSLocalizedDescription=The Internet connection appears to be offline., NSErrorFailingURLStringKey=https://api.somafm.com/cliqhop256.pls, NSErrorFailingURLKey=https://api.somafm.com/cliqhop256.pls, _kCFStreamErrorDomainKey=1})
-[12:15:03.600] PLS idx=2 FAIL err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={_kCFStreamErrorCodeKey=50, NSUnderlyingError=0x143b203b0 {Error Domain=kCFErrorDomainCFNetwork Code=-1009 "(null)" UserInfo={_NSURLErrorNWPathKey=unsatisfied (No network route), dns, _kCFStreamErrorCodeKey=50, _kCFStreamErrorDomainKey=1}}, _NSURLErrorFailingURLSessionTaskErrorKey=LocalDataTask <16F07B83-4513-49FA-8E75-C864DBF8ED55>.<3>, _NSURLErrorRelatedURLSessionTaskErrorKey=(
-    "LocalDataTask <16F07B83-4513-49FA-8E75-C864DBF8ED55>.<3>"
-), NSLocalizedDescription=The Internet connection appears to be offline., NSErrorFailingURLStringKey=https://api.somafm.com/synphaera256.pls, NSErrorFailingURLKey=https://api.somafm.com/synphaera256.pls, _kCFStreamErrorDomainKey=1})
-[12:15:03.600] PLS idx=5 FAIL err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={_kCFStreamErrorCodeKey=50, NSUnderlyingError=0x143b1a820 {Error Domain=kCFErrorDomainCFNetwork Code=-1009 "(null)" UserInfo={_NSURLErrorNWPathKey=unsatisfied (No network route), dns, _kCFStreamErrorCodeKey=50, _kCFStreamErrorDomainKey=1}}, _NSURLErrorFailingURLSessionTaskErrorKey=LocalDataTask <BE8B961D-0E71-434D-9BA2-0091A90EC27B>.<6>, _NSURLErrorRelatedURLSessionTaskErrorKey=(
-    "LocalDataTask <BE8B961D-0E71-434D-9BA2-0091A90EC27B>.<6>"
-), NSLocalizedDescription=The Internet connection appears to be offline., NSErrorFailingURLStringKey=https://api.somafm.com/groovesalad256.pls, NSErrorFailingURLKey=https://api.somafm.com/groovesalad256.pls, _kCFStreamErrorDomainKey=1})
-[12:15:03.600] PLS idx=1 FAIL err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={_kCFStreamErrorCodeKey=50, NSUnderlyingError=0x143b28f70 {Error Domain=kCFErrorDomainCFNetwork Code=-1009 "(null)" UserInfo={_NSURLErrorNWPathKey=unsatisfied (No network route), dns, _kCFStreamErrorCodeKey=50, _kCFStreamErrorDomainKey=1}}, _NSURLErrorFailingURLSessionTaskErrorKey=LocalDataTask <8E245B28-FE47-4EC5-B677-1FDED654B055>.<2>, _NSURLErrorRelatedURLSessionTaskErrorKey=(
-    "LocalDataTask <8E245B28-FE47-4EC5-B677-1FDED654B055>.<2>"
-), NSLocalizedDescription=The Internet connection appears to be offline., NSErrorFailingURLStringKey=https://api.somafm.com/deepspaceone130.pls, NSErrorFailingURLKey=https://api.somafm.com/deepspaceone130.pls, _kCFStreamErrorDomainKey=1})
-[12:15:03.601] CONNECT Synphaera url[0]=https://ice4.somafm.com/synphaera-256-mp3
-[12:15:03.601] timeControlStatus=2 reason=nil
-[12:15:03.627] item.error=Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x142ed1060 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}}
-[12:15:03.627] status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x142ed1060 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:15:11.615] WATCHDOG Synphaera url[0] timeout — t=0.0 status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x142ed1060 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:15:11.615] FALLBACK Synphaera url[0] -> url[1]: watchdog
-[12:15:11.662] CONNECT Synphaera url[1]=https://ice6.somafm.com/synphaera-256-mp3
-[12:15:11.663] timeControlStatus=2 reason=nil
-[12:15:11.737] item.error=Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x132e0b310 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}}
-[12:15:11.737] status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x132e0b310 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:15:19.668] WATCHDOG Synphaera url[1] timeout — t=0.0 status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x132e0b310 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:15:19.669] FALLBACK Synphaera url[1] -> url[2]: watchdog
-[12:15:19.670] CONNECT Synphaera url[2]=https://ice2.somafm.com/synphaera-256-mp3
-[12:15:19.670] timeControlStatus=2 reason=nil
-[12:15:19.684] item.error=Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x14385e070 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}}
-[12:15:19.684] status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x14385e070 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:15:27.674] WATCHDOG Synphaera url[2] timeout — t=0.0 status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x14385e070 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:15:27.674] FALLBACK Synphaera url[2] -> url[3]: watchdog
-[12:15:27.674] RETRY Synphaera attempt=1/1
-[12:15:28.676] CONNECT Synphaera url[0]=https://ice4.somafm.com/synphaera-256-mp3
-[12:15:28.676] timeControlStatus=2 reason=nil
-[12:15:28.687] item.error=Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x142f29430 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}}
-[12:15:28.687] status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x142f29430 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:15:31.484] PLS idx=6 FAIL err=Optional(Error Domain=NSURLErrorDomain Code=-1001 "The request timed out." UserInfo={_kCFStreamErrorCodeKey=-2102, NSUnderlyingError=0x133005ed0 {Error Domain=kCFErrorDomainCFNetwork Code=-1001 "(null)" UserInfo={_kCFStreamErrorCodeKey=-2102, _kCFStreamErrorDomainKey=4}}, _NSURLErrorFailingURLSessionTaskErrorKey=LocalDataTask <DF7CF3AA-E433-4162-8106-22B0EC1B2553>.<7>, _NSURLErrorRelatedURLSessionTaskErrorKey=(
-    "LocalDataTask <DF7CF3AA-E433-4162-8106-22B0EC1B2553>.<7>"
-), NSLocalizedDescription=The request timed out., NSErrorFailingURLStringKey=https://api.somafm.com/sf1033130.pls, NSErrorFailingURLKey=https://api.somafm.com/sf1033130.pls, _kCFStreamErrorDomainKey=4})
-[12:15:36.678] WATCHDOG Synphaera url[0] timeout — t=0.0 status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x142f29430 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:15:36.678] FALLBACK Synphaera url[0] -> url[1]: watchdog
-[12:15:36.680] CONNECT Synphaera url[1]=https://ice6.somafm.com/synphaera-256-mp3
-[12:15:36.680] timeControlStatus=2 reason=nil
-[12:15:36.691] item.error=Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x142e6e260 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}}
-[12:15:36.692] status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x142e6e260 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:15:42.176] RESULT [2] FAIL Synphaera t=0.00 elapsed=40.0s urlIdx=1
-[12:15:42.177] STOP
-[12:15:42.679] --- TEST [3] SomaFM / Mission Control ---
-[12:15:42.683] CONNECT Mission Control url[0]=https://ice4.somafm.com/missioncontrol-128-aac
-[12:15:42.683] timeControlStatus=2 reason=nil
-[12:15:42.692] item.error=Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x1438483b0 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}}
-[12:15:42.692] status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x1438483b0 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:20:57.528] RESULT [3] FAIL Mission Control t=0.00 elapsed=314.8s urlIdx=0
-[12:20:57.528] STOP
-[12:20:58.030] --- TEST [4] SomaFM / Cliqhop ---
-[12:20:58.031] CONNECT Cliqhop url[0]=https://ice4.somafm.com/cliqhop-256-mp3
-[12:20:58.031] timeControlStatus=2 reason=nil
-[12:20:58.045] item.error=Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x142ea5f40 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}}
-[12:20:58.045] status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x142ea5f40 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:21:06.033] WATCHDOG Cliqhop url[0] timeout — t=0.0 status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x142ea5f40 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:21:06.033] FALLBACK Cliqhop url[0] -> url[1]: watchdog
-[12:21:06.035] CONNECT Cliqhop url[1]=https://ice6.somafm.com/cliqhop-256-mp3
-[12:21:06.035] timeControlStatus=2 reason=nil
-[12:21:06.047] item.error=Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x143848d30 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}}
-[12:21:06.047] status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x143848d30 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:21:14.036] WATCHDOG Cliqhop url[1] timeout — t=0.0 status=2 err=Optional(Error Domain=NSURLErrorDomain Code=-1009 "The Internet connection appears to be offline." UserInfo={NSLocalizedDescription=The Internet connection appears to be offline., NSUnderlyingError=0x143848d30 {Error Domain=NSOSStatusErrorDomain Code=-1009 "(null)"}})
-[12:21:14.036] FALLBACK Cliqhop url[1] -> url[2]: watchdog
-[12:21:14.038] CONNECT Cliqhop url[2]=https://ice2.somafm.com/cliqhop-256-mp3
-[12:21:14.039] timeControlStatus=2 reason=nil
-[12:21:22.040] WATCHDOG Cliqhop url[2] timeout — t=0.0 status=2 err=nil
-[12:21:22.040] FALLBACK Cliqhop url[2] -> url[3]: watchdog
-[12:21:22.040] RETRY Cliqhop attempt=1/1
-[12:21:23.044] CONNECT Cliqhop url[0]=https://ice4.somafm.com/cliqhop-256-mp3
-[12:21:23.045] timeControlStatus=2 reason=nil
-[12:21:25.149] acclog: uri=https://ice4.somafm.com/cliqhop-256-mp3 bytes=10867 bitrate=76595.13635756288
-[12:21:25.150] status=1 err=nil
-[12:21:26.047] PLAYING Cliqhop t=0.0 buffered=2.9779591836734696 bytes=303438
-[12:21:26.533] RESULT [4] PASS Cliqhop t=0.00 elapsed=28.5s urlIdx=0
-[12:21:26.534] STOP
-[12:21:27.035] --- TEST [5] SomaFM / Groove Salad ---
-[12:21:27.036] CONNECT Groove Salad url[0]=https://ice4.somafm.com/groovesalad-256-mp3
-[12:21:27.036] timeControlStatus=2 reason=nil
-[12:21:40.622] acclog: uri=https://ice4.somafm.com/groovesalad-256-mp3 bytes=647001 bitrate=405404.28030611697
-[12:21:40.622] status=1 err=nil
-[12:21:40.622] WATCHDOG Groove Salad url[0] timeout — t=0.0 status=2 err=nil
-[12:21:40.622] FALLBACK Groove Salad url[0] -> url[1]: watchdog
-[12:21:40.623] CONNECT Groove Salad url[1]=https://ice6.somafm.com/groovesalad-256-mp3
-[12:21:40.623] timeControlStatus=2 reason=nil
-[12:30:10.135] RESULT [5] FAIL Groove Salad t=0.00 elapsed=523.1s urlIdx=1
-[12:30:10.135] STOP
-[12:30:10.637] --- TEST [6] SomaFM / SF 10-33 ---
-[12:30:10.638] CONNECT SF 10-33 url[0]=https://ice4.somafm.com/sf1033-128-aac
-[12:30:10.638] timeControlStatus=2 reason=nil
-[12:30:20.652] acclog: uri=https://ice4.somafm.com/sf1033-128-aac bytes=325451 bitrate=281656.98940751376
-[12:30:20.653] status=1 err=nil
-[12:30:21.021] PLAYING SF 10-33 t=0.0 buffered=20.340680272108845 bytes=326937
-[12:30:21.022] RESULT [6] PASS SF 10-33 t=0.00 elapsed=10.4s urlIdx=0
-[12:30:21.023] STOP
-[12:30:21.525] --- TEST [7] Radio Paradise / Mellow Mix ---
-[12:30:21.529] CONNECT Mellow Mix url[0]=https://stream.radioparadise.com/mellow-128
-[12:30:21.529] timeControlStatus=2 reason=nil
-[12:30:35.698] WATCHDOG Mellow Mix url[0] timeout — t=0.0 status=2 err=nil
-[12:30:35.699] FALLBACK Mellow Mix url[0] -> url[1]: watchdog
-[12:30:35.699] RETRY Mellow Mix attempt=1/1
-[12:30:35.699] status=1 err=nil
-[12:30:36.530] PLAYING Mellow Mix t=0.0 buffered=0.9752380952380952 bytes=0
-[12:30:36.531] RESULT [7] PASS Mellow Mix t=0.00 elapsed=15.0s urlIdx=0
-[12:30:36.532] STOP
-[12:30:36.702] CONNECT Mellow Mix url[0]=https://stream.radioparadise.com/mellow-128
-[12:30:36.702] timeControlStatus=2 reason=nil
-[12:30:37.034] --- TEST [8] Radio Paradise / Main Mix ---
-[12:30:37.035] CONNECT Main Mix url[0]=https://stream.radioparadise.com/mp3-128
-[12:30:37.035] timeControlStatus=2 reason=nil
-[12:30:37.885] status=1 err=nil
-[12:30:38.537] PLAYING Main Mix t=0.0 buffered=0.966530612244898 bytes=0
-[12:30:39.037] RESULT [8] PASS Main Mix t=0.00 elapsed=2.0s urlIdx=0
-[12:30:39.038] STOP
-[12:30:39.538] --- TEST [9] Radio Paradise / Global Mix ---
-[12:30:39.540] CONNECT Global Mix url[0]=https://stream.radioparadise.com/global-128
-[12:30:39.540] timeControlStatus=2 reason=nil
-[12:30:47.542] WATCHDOG Global Mix url[0] timeout — t=0.0 status=2 err=nil
-[12:30:47.543] FALLBACK Global Mix url[0] -> url[1]: watchdog
-[12:30:47.543] RETRY Global Mix attempt=1/1
-[12:30:48.545] CONNECT Global Mix url[0]=https://stream.radioparadise.com/global-128
-[12:30:48.546] timeControlStatus=2 reason=nil
-[12:30:56.546] WATCHDOG Global Mix url[0] timeout — t=0.0 status=2 err=nil
-[12:30:56.546] FALLBACK Global Mix url[0] -> url[1]: watchdog
-[12:30:56.546] EXHAUSTED Global Mix
-[12:33:14.742] RESULT [9] FAIL Global Mix t=0.00 elapsed=155.2s urlIdx=1
-[12:33:14.742] STOP
-[12:33:15.244] --- TEST [10] NTS Mixtapes / Slow Focus ---
-[12:33:15.245] CONNECT Slow Focus url[0]=https://stream-mixtape-geo.ntslive.net/mixtape
-[12:33:15.245] timeControlStatus=2 reason=nil
-[12:33:23.247] WATCHDOG Slow Focus url[0] timeout — t=0.0 status=2 err=nil
-[12:33:23.247] FALLBACK Slow Focus url[0] -> url[1]: watchdog
-[12:33:23.247] RETRY Slow Focus attempt=1/1
-[12:33:24.250] CONNECT Slow Focus url[0]=https://stream-mixtape-geo.ntslive.net/mixtape
-[12:33:24.250] timeControlStatus=2 reason=nil
-[12:33:32.250] WATCHDOG Slow Focus url[0] timeout — t=0.0 status=2 err=nil
-[12:33:32.251] FALLBACK Slow Focus url[0] -> url[1]: watchdog
-[12:33:32.252] EXHAUSTED Slow Focus
-[12:33:55.245] RESULT [10] FAIL Slow Focus t=0.00 elapsed=40.0s urlIdx=1
-[12:33:55.246] STOP
-[12:33:55.749] --- TEST [11] NTS Mixtapes / Low Key ---
-[12:33:55.751] CONNECT Low Key url[0]=https://stream-mixtape-geo.ntslive.net/mixtape2
-[12:33:55.751] timeControlStatus=2 reason=nil
-[12:34:30.916] WATCHDOG Low Key url[0] timeout — t=0.0 status=2 err=nil
-[12:34:30.917] FALLBACK Low Key url[0] -> url[1]: watchdog
-[12:34:30.917] RETRY Low Key attempt=1/1
-[12:34:31.924] CONNECT Low Key url[0]=https://stream-mixtape-geo.ntslive.net/mixtape2
-[12:34:31.926] timeControlStatus=2 reason=nil
-[12:34:35.915] RESULT [11] FAIL Low Key t=0.00 elapsed=40.2s urlIdx=0
-[12:34:35.916] STOP
-[12:34:36.417] --- TEST [12] NTS Mixtapes / Sheet Music ---
-[12:34:36.419] CONNECT Sheet Music url[0]=https://stream-mixtape-geo.ntslive.net/mixtape35
-[12:34:36.419] timeControlStatus=2 reason=nil
-[12:34:44.419] WATCHDOG Sheet Music url[0] timeout — t=0.0 status=2 err=nil
-[12:34:44.421] FALLBACK Sheet Music url[0] -> url[1]: watchdog
-[12:34:44.421] RETRY Sheet Music attempt=1/1
-[12:34:45.424] CONNECT Sheet Music url[0]=https://stream-mixtape-geo.ntslive.net/mixtape35
-[12:34:45.424] timeControlStatus=2 reason=nil
-[12:34:53.425] WATCHDOG Sheet Music url[0] timeout — t=0.0 status=2 err=nil
-[12:34:53.426] FALLBACK Sheet Music url[0] -> url[1]: watchdog
-[12:34:53.427] EXHAUSTED Sheet Music
-[12:43:34.806] RESULT [12] FAIL Sheet Music t=0.00 elapsed=538.4s urlIdx=1
-[12:43:34.807] STOP
-[12:43:35.308] --- TEST [13] NTS Mixtapes / Expansions ---
-[12:43:35.310] CONNECT Expansions url[0]=https://stream-mixtape-geo.ntslive.net/mixtape3
-[12:43:35.310] timeControlStatus=2 reason=nil
-[12:43:43.321] WATCHDOG Expansions url[0] timeout — t=0.0 status=2 err=nil
-[12:43:43.321] FALLBACK Expansions url[0] -> url[1]: watchdog
-[12:43:43.321] RETRY Expansions attempt=1/1
-[12:43:44.325] CONNECT Expansions url[0]=https://stream-mixtape-geo.ntslive.net/mixtape3
-[12:43:44.326] timeControlStatus=2 reason=nil
-[12:43:52.333] WATCHDOG Expansions url[0] timeout — t=0.0 status=2 err=nil
-[12:43:52.334] FALLBACK Expansions url[0] -> url[1]: watchdog
-[12:43:52.335] EXHAUSTED Expansions
-[12:44:15.336] RESULT [13] FAIL Expansions t=0.00 elapsed=40.0s urlIdx=1
-[12:44:15.337] STOP
-[12:44:15.839] === SELF-TEST SUMMARY ===
-  [0] PASS  Drone Zone  — t=0.00 elapsed=27.1s urlIdx=3
-  [1] FAIL  Deep Space One  — t=0.00 elapsed=186.7s urlIdx=0
-  [2] FAIL  Synphaera  — t=0.00 elapsed=40.0s urlIdx=1
-  [3] FAIL  Mission Control  — t=0.00 elapsed=314.8s urlIdx=0
-  [4] PASS  Cliqhop  — t=0.00 elapsed=28.5s urlIdx=0
-  [5] FAIL  Groove Salad  — t=0.00 elapsed=523.1s urlIdx=1
-  [6] PASS  SF 10-33  — t=0.00 elapsed=10.4s urlIdx=0
-  [7] PASS  Mellow Mix  — t=0.00 elapsed=15.0s urlIdx=0
-  [8] PASS  Main Mix  — t=0.00 elapsed=2.0s urlIdx=0
-  [9] FAIL  Global Mix  — t=0.00 elapsed=155.2s urlIdx=1
+[10:15:05.301] PLS idx=0 Drone Zone -> 5 urls, first=https://ice4.somafm.com/dronezone-256-mp3
+[10:15:05.530] PLS idx=6 SF 10-33 -> 5 urls, first=https://ice4.somafm.com/sf1033-128-aac
+[10:15:05.760] PLS idx=2 Synphaera -> 5 urls, first=https://ice4.somafm.com/synphaera-256-mp3
+[10:15:05.769] PLS idx=4 Cliqhop -> 5 urls, first=https://ice4.somafm.com/cliqhop-256-mp3
+[10:15:06.015] PLS idx=3 Mission Control -> 5 urls, first=https://ice4.somafm.com/missioncontrol-128-aac
+[10:15:06.041] PLS idx=1 Deep Space One -> 5 urls, first=https://ice4.somafm.com/deepspaceone-128-aac
+[10:15:06.330] PLS idx=5 Groove Salad -> 5 urls, first=https://ice4.somafm.com/groovesalad-256-mp3
+[10:15:07.361] === SELF-TEST START: 14 stations ===
+[10:15:07.361] --- TEST [0] SomaFM / Drone Zone ---
+[10:15:07.396] CONNECT Drone Zone url[0]=https://ice4.somafm.com/dronezone-256-mp3
+[10:15:07.399] timeControlStatus=2 reason=nil
+[10:15:11.398] acclog: uri=https://ice4.somafm.com/dronezone-256-mp3 bytes=37616 bitrate=289588.2199244386
+[10:15:11.398] status=1 err=nil
+[10:15:11.902] PLAYING Drone Zone t=0.0 buffered=1.1755102040816328 bytes=37616
+[10:15:11.902] RESULT [0] PASS Drone Zone t=0.00 elapsed=4.5s urlIdx=0
+[10:15:11.903] STOP
+[10:15:12.404] --- TEST [1] SomaFM / Deep Space One ---
+[10:15:12.405] CONNECT Deep Space One url[0]=https://ice4.somafm.com/deepspaceone-128-aac
+[10:15:12.405] timeControlStatus=2 reason=nil
+[10:15:24.410] WATCHDOG Deep Space One url[0] timeout — t=0.0 status=2 err=nil
+[10:15:24.410] FALLBACK Deep Space One url[0] -> url[1]: watchdog
+[10:15:24.412] CONNECT Deep Space One url[1]=https://ice2.somafm.com/deepspaceone-128-aac
+[10:15:24.413] timeControlStatus=2 reason=nil
+[10:15:26.027] acclog: uri=https://ice2.somafm.com/deepspaceone-128-aac bytes=1486 bitrate=15813.606615087048
+[10:15:26.027] status=1 err=nil
+[10:15:26.914] PLAYING Deep Space One t=0.485857479 buffered=5.758548752834467 bytes=204336
+[10:15:27.411] RESULT [1] PASS Deep Space One t=0.98 elapsed=15.0s urlIdx=1
+[10:15:27.411] STOP
+[10:15:27.912] --- TEST [2] SomaFM / Synphaera ---
+[10:15:27.912] CONNECT Synphaera url[0]=https://ice4.somafm.com/synphaera-256-mp3
+[10:15:27.913] timeControlStatus=2 reason=nil
+[10:15:35.915] WATCHDOG Synphaera url[0] timeout — t=0.0 status=2 err=nil
+[10:15:35.915] FALLBACK Synphaera url[0] -> url[1]: watchdog
+[10:15:35.918] CONNECT Synphaera url[1]=https://ice2.somafm.com/synphaera-256-mp3
+[10:15:35.918] timeControlStatus=2 reason=nil
+[10:15:37.345] acclog: uri=https://ice2.somafm.com/synphaera-256-mp3 bytes=8359 bitrate=93942.41503311951
+[10:15:37.346] status=1 err=nil
+[10:15:37.919] PLAYING Synphaera t=0.0 buffered=0.2612244897959184 bytes=92787
+[10:15:38.415] RESULT [2] PASS Synphaera t=0.47 elapsed=10.5s urlIdx=1
+[10:15:38.415] STOP
+[10:15:38.916] --- TEST [3] SomaFM / Mission Control ---
+[10:15:38.917] CONNECT Mission Control url[0]=https://ice4.somafm.com/missioncontrol-128-aac
+[10:15:38.917] timeControlStatus=2 reason=nil
+[10:15:50.919] WATCHDOG Mission Control url[0] timeout — t=0.0 status=2 err=nil
+[10:15:50.919] FALLBACK Mission Control url[0] -> url[1]: watchdog
+[10:15:50.921] CONNECT Mission Control url[1]=https://ice2.somafm.com/missioncontrol-128-aac
+[10:15:50.922] timeControlStatus=2 reason=nil
+[10:15:52.334] acclog: uri=https://ice2.somafm.com/missioncontrol-128-aac bytes=1145 bitrate=12977.928731302
+[10:15:52.334] status=1 err=nil
+[10:15:53.423] PLAYING Mission Control t=0.729928656 buffered=5.804988662131519 bytes=279028
+[10:15:53.920] RESULT [3] PASS Mission Control t=1.23 elapsed=15.0s urlIdx=1
+[10:15:53.921] STOP
+[10:15:54.422] --- TEST [4] SomaFM / Cliqhop ---
+[10:15:54.423] CONNECT Cliqhop url[0]=https://ice4.somafm.com/cliqhop-256-mp3
+[10:15:54.423] timeControlStatus=2 reason=nil
+[10:16:02.424] WATCHDOG Cliqhop url[0] timeout — t=0.0 status=2 err=nil
+[10:16:02.424] FALLBACK Cliqhop url[0] -> url[1]: watchdog
+[10:16:02.425] CONNECT Cliqhop url[1]=https://ice2.somafm.com/cliqhop-256-mp3
+[10:16:02.425] timeControlStatus=2 reason=nil
+[10:16:03.899] acclog: uri=https://ice2.somafm.com/cliqhop-256-mp3 bytes=9195 bitrate=97991.39944300363
+[10:16:03.899] status=1 err=nil
+[10:16:04.425] PLAYING Cliqhop t=0.0 buffered=0.2873469387755102 bytes=93623
+[10:16:04.924] RESULT [4] PASS Cliqhop t=0.41 elapsed=10.5s urlIdx=1
+[10:16:04.924] STOP
+[10:16:05.425] --- TEST [5] SomaFM / Groove Salad ---
+[10:16:05.426] CONNECT Groove Salad url[0]=https://ice4.somafm.com/groovesalad-256-mp3
+[10:16:05.427] timeControlStatus=2 reason=nil
+[10:16:06.884] acclog: uri=https://ice4.somafm.com/groovesalad-256-mp3 bytes=9195 bitrate=108074.739994412
+[10:16:06.885] status=1 err=nil
+[10:16:07.428] PLAYING Groove Salad t=0.0 buffered=0.2873469387755102 bytes=93623
+[10:16:07.428] RESULT [5] PASS Groove Salad t=0.00 elapsed=2.0s urlIdx=0
+[10:16:07.428] STOP
+[10:16:07.930] --- TEST [6] SomaFM / SF 10-33 ---
+[10:16:07.931] CONNECT SF 10-33 url[0]=https://ice4.somafm.com/sf1033-128-aac
+[10:16:07.931] timeControlStatus=2 reason=nil
+[10:16:19.931] WATCHDOG SF 10-33 url[0] timeout — t=0.0 status=2 err=nil
+[10:16:19.931] FALLBACK SF 10-33 url[0] -> url[1]: watchdog
+[10:16:19.932] CONNECT SF 10-33 url[1]=https://ice2.somafm.com/sf1033-128-aac
+[10:16:19.932] timeControlStatus=2 reason=nil
+[10:16:21.341] acclog: uri=https://ice2.somafm.com/sf1033-128-aac bytes=6688 bitrate=75295.00951040676
+[10:16:21.341] status=1 err=nil
+[10:16:21.933] PLAYING SF 10-33 t=0.236405853 buffered=0.4179591836734694 bytes=91395
+[10:16:22.431] RESULT [6] PASS SF 10-33 t=0.73 elapsed=14.5s urlIdx=1
+[10:16:22.433] STOP
+[10:16:22.934] --- TEST [7] Radio Paradise / Mellow Mix ---
+[10:16:22.936] CONNECT Mellow Mix url[0]=https://stream.radioparadise.com/mellow-128
+[10:16:22.936] timeControlStatus=2 reason=nil
+[10:16:23.959] status=1 err=nil
+[10:16:24.437] PLAYING Mellow Mix t=0.0 buffered=0.9752380952380952 bytes=0
+[10:16:24.937] RESULT [7] PASS Mellow Mix t=0.00 elapsed=2.0s urlIdx=0
+[10:16:24.938] STOP
+[10:16:25.439] --- TEST [8] Radio Paradise / Main Mix ---
+[10:16:25.441] CONNECT Main Mix url[0]=https://stream.radioparadise.com/mp3-128
+[10:16:25.441] timeControlStatus=2 reason=nil
+[10:16:33.442] WATCHDOG Main Mix url[0] timeout — t=0.0 status=2 err=nil
+[10:16:33.443] FALLBACK Main Mix url[0] -> url[1]: watchdog
+[10:16:33.443] RETRY Main Mix attempt=1/1
+[10:16:34.446] CONNECT Main Mix url[0]=https://stream.radioparadise.com/mp3-128
+[10:16:34.446] timeControlStatus=2 reason=nil
+[10:16:35.335] status=1 err=nil
+[10:16:35.947] PLAYING Main Mix t=0.0 buffered=0.966530612244898 bytes=0
+[10:16:36.442] RESULT [8] PASS Main Mix t=0.00 elapsed=11.0s urlIdx=0
+[10:16:36.443] STOP
+[10:16:36.944] --- TEST [9] Radio Paradise / Global Mix ---
+[10:16:36.946] CONNECT Global Mix url[0]=https://stream.radioparadise.com/global-128
+[10:16:36.946] timeControlStatus=2 reason=nil
+[10:16:44.947] WATCHDOG Global Mix url[0] timeout — t=0.0 status=2 err=nil
+[10:16:44.947] FALLBACK Global Mix url[0] -> url[1]: watchdog
+[10:16:44.947] RETRY Global Mix attempt=1/1
+[10:16:45.950] CONNECT Global Mix url[0]=https://stream.radioparadise.com/global-128
+[10:16:45.950] timeControlStatus=2 reason=nil
+[10:16:53.950] WATCHDOG Global Mix url[0] timeout — t=0.0 status=2 err=nil
+[10:16:53.951] FALLBACK Global Mix url[0] -> url[1]: watchdog
+[10:16:53.951] EXHAUSTED Global Mix
+[10:17:16.946] RESULT [9] FAIL Global Mix t=0.00 elapsed=40.0s urlIdx=1
+[10:17:16.946] STOP
+[10:17:17.447] --- TEST [10] NTS Mixtapes / Slow Focus ---
+[10:17:17.450] CONNECT Slow Focus url[0]=https://stream-mixtape-geo.ntslive.net/mixtape
+[10:17:17.450] timeControlStatus=2 reason=nil
+[10:17:25.451] WATCHDOG Slow Focus url[0] timeout — t=0.0 status=2 err=nil
+[10:17:25.452] FALLBACK Slow Focus url[0] -> url[1]: watchdog
+[10:17:25.452] RETRY Slow Focus attempt=1/1
+[10:17:26.454] CONNECT Slow Focus url[0]=https://stream-mixtape-geo.ntslive.net/mixtape
+[10:17:26.454] timeControlStatus=2 reason=nil
+[10:17:34.455] WATCHDOG Slow Focus url[0] timeout — t=0.0 status=2 err=nil
+[10:17:34.455] FALLBACK Slow Focus url[0] -> url[1]: watchdog
+[10:17:34.456] EXHAUSTED Slow Focus
+[10:17:57.450] RESULT [10] FAIL Slow Focus t=0.00 elapsed=40.0s urlIdx=1
+[10:17:57.450] STOP
+[10:17:57.951] --- TEST [11] NTS Mixtapes / Low Key ---
+[10:17:57.954] CONNECT Low Key url[0]=https://stream-mixtape-geo.ntslive.net/mixtape2
+[10:17:57.954] timeControlStatus=2 reason=nil
+[10:18:05.955] WATCHDOG Low Key url[0] timeout — t=0.0 status=2 err=nil
+[10:18:05.956] FALLBACK Low Key url[0] -> url[1]: watchdog
+[10:18:05.956] RETRY Low Key attempt=1/1
+[10:18:06.958] CONNECT Low Key url[0]=https://stream-mixtape-geo.ntslive.net/mixtape2
+[10:18:06.958] timeControlStatus=2 reason=nil
+[10:18:14.959] WATCHDOG Low Key url[0] timeout — t=0.0 status=2 err=nil
+[10:18:14.959] FALLBACK Low Key url[0] -> url[1]: watchdog
+[10:18:14.960] EXHAUSTED Low Key
+[10:18:37.954] RESULT [11] FAIL Low Key t=0.00 elapsed=40.0s urlIdx=1
+[10:18:37.954] STOP
+[10:18:38.456] --- TEST [12] NTS Mixtapes / Sheet Music ---
+[10:18:38.458] CONNECT Sheet Music url[0]=https://stream-mixtape-geo.ntslive.net/mixtape35
+[10:18:38.459] timeControlStatus=2 reason=nil
+[10:18:46.460] WATCHDOG Sheet Music url[0] timeout — t=0.0 status=2 err=nil
+[10:18:46.460] FALLBACK Sheet Music url[0] -> url[1]: watchdog
+[10:18:46.460] RETRY Sheet Music attempt=1/1
+[10:18:47.463] CONNECT Sheet Music url[0]=https://stream-mixtape-geo.ntslive.net/mixtape35
+[10:18:47.463] timeControlStatus=2 reason=nil
+[10:18:55.464] WATCHDOG Sheet Music url[0] timeout — t=0.0 status=2 err=nil
+[10:18:55.464] FALLBACK Sheet Music url[0] -> url[1]: watchdog
+[10:18:55.465] EXHAUSTED Sheet Music
+[10:19:18.459] RESULT [12] FAIL Sheet Music t=0.00 elapsed=40.0s urlIdx=1
+[10:19:18.459] STOP
+[10:19:18.960] --- TEST [13] NTS Mixtapes / Expansions ---
+[10:19:18.962] CONNECT Expansions url[0]=https://stream-mixtape-geo.ntslive.net/mixtape3
+[10:19:18.962] timeControlStatus=2 reason=nil
+[10:19:26.963] WATCHDOG Expansions url[0] timeout — t=0.0 status=2 err=nil
+[10:19:26.964] FALLBACK Expansions url[0] -> url[1]: watchdog
+[10:19:26.964] RETRY Expansions attempt=1/1
+[10:19:27.967] CONNECT Expansions url[0]=https://stream-mixtape-geo.ntslive.net/mixtape3
+[10:19:27.967] timeControlStatus=2 reason=nil
+[10:19:35.967] WATCHDOG Expansions url[0] timeout — t=0.0 status=2 err=nil
+[10:19:35.968] FALLBACK Expansions url[0] -> url[1]: watchdog
+[10:19:35.968] EXHAUSTED Expansions
+[10:19:58.962] RESULT [13] FAIL Expansions t=0.00 elapsed=40.0s urlIdx=1
+[10:19:58.962] STOP
+[10:19:59.464] === SELF-TEST SUMMARY ===
+  [0] PASS  Drone Zone  — t=0.00 elapsed=4.5s urlIdx=0
+  [1] PASS  Deep Space One  — t=0.98 elapsed=15.0s urlIdx=1
+  [2] PASS  Synphaera  — t=0.47 elapsed=10.5s urlIdx=1
+  [3] PASS  Mission Control  — t=1.23 elapsed=15.0s urlIdx=1
+  [4] PASS  Cliqhop  — t=0.41 elapsed=10.5s urlIdx=1
+  [5] PASS  Groove Salad  — t=0.00 elapsed=2.0s urlIdx=0
+  [6] PASS  SF 10-33  — t=0.73 elapsed=14.5s urlIdx=1
+  [7] PASS  Mellow Mix  — t=0.00 elapsed=2.0s urlIdx=0
+  [8] PASS  Main Mix  — t=0.00 elapsed=11.0s urlIdx=0
+  [9] FAIL  Global Mix  — t=0.00 elapsed=40.0s urlIdx=1
   [10] FAIL  Slow Focus  — t=0.00 elapsed=40.0s urlIdx=1
-  [11] FAIL  Low Key  — t=0.00 elapsed=40.2s urlIdx=0
-  [12] FAIL  Sheet Music  — t=0.00 elapsed=538.4s urlIdx=1
+  [11] FAIL  Low Key  — t=0.00 elapsed=40.0s urlIdx=1
+  [12] FAIL  Sheet Music  — t=0.00 elapsed=40.0s urlIdx=1
   [13] FAIL  Expansions  — t=0.00 elapsed=40.0s urlIdx=1
-=== 5/14 passed ===
+=== 9/14 passed ===

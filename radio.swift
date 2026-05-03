@@ -563,8 +563,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         startPlayingCurrent()
 
         // Раз в 0.5с проверяем — заиграло ли, и не вышли ли за таймаут.
+        // Регистрируем в .common mode: иначе AVPlayer внутри может удерживать RunLoop
+        // в другом mode'е, и таймер перестанет тикать (наблюдалось elapsed=538s при таймауте 40s).
         testWaitTimer?.invalidate()
-        testWaitTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] t in
+        let timer = Timer(timeInterval: 0.5, repeats: true) { [weak self] t in
             guard let self = self else { t.invalidate(); return }
             let elapsed = Date().timeIntervalSince(self.testStartTime)
             if self.declaredPlaying && elapsed > 2.0 {
@@ -575,6 +577,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 self.recordTestResult(passed: false, elapsed: elapsed)
             }
         }
+        RunLoop.main.add(timer, forMode: .common)
+        testWaitTimer = timer
     }
 
     func recordTestResult(passed: Bool, elapsed: TimeInterval) {
