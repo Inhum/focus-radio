@@ -87,6 +87,7 @@ func rlog(_ s: String) {
 class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var statusItem: NSStatusItem!
     var popover: NSPopover!
+    var eventMonitor: Any?
     var player: AVPlayer?
     var currentItem: AVPlayerItem?
     var watchdog: Timer?
@@ -317,8 +318,23 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     @objc func togglePopover(_ sender: Any?) {
         guard let button = statusItem.button else { return }
-        if popover.isShown { popover.performClose(sender) }
-        else { popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY) }
+        if popover.isShown {
+            popover.performClose(sender)
+        } else {
+            popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            eventMonitor = NSEvent.addGlobalMonitorForEvents(
+                matching: [.leftMouseDown, .rightMouseDown]
+            ) { [weak self] _ in
+                self?.popover.performClose(nil)
+            }
+        }
+    }
+
+    func popoverDidClose(_ notification: Notification) {
+        if let monitor = eventMonitor {
+            NSEvent.removeMonitor(monitor)
+            eventMonitor = nil
+        }
     }
 
     @objc func togglePlay() {
