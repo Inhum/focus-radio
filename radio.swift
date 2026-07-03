@@ -5,6 +5,7 @@
 
 import Cocoa
 import AVFoundation
+import MediaPlayer
 
 struct Station {
     let provider: String
@@ -156,6 +157,16 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             return
         }
 
+        // Восстанавливаем последнее состояние (станция и громкость).
+        let d = UserDefaults.standard
+        if let idx = d.object(forKey: "focusRadio.stationIdx") as? Int,
+           idx >= 0, idx < stations.count {
+            currentStationIdx = idx
+        }
+        if let v = d.object(forKey: "focusRadio.volume") as? Float {
+            volume = max(0, min(1, v))
+        }
+
         statusItem = NSStatusBar.system.statusItem(withLength: 28)
         statusItem.button?.target = self
         statusItem.button?.action = #selector(togglePopover(_:))
@@ -171,6 +182,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         }
 
         fetchSomaFMURLs()
+        setupMediaControls()
     }
 
     // Запрашиваем .pls для каждой SomaFM-станции и обновляем список URL.
@@ -263,6 +275,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         statusLabel.font = NSFont.systemFont(ofSize: 11)
         v.addSubview(statusLabel)
 
+        let about = NSButton(frame: NSRect(x: 16, y: 4, width: 80, height: 22))
+        about.title = "About"; about.bezelStyle = .rounded
+        about.target = self
+        about.action = #selector(showAbout)
+        v.addSubview(about)
+
         let quit = NSButton(frame: NSRect(x: 254, y: 4, width: 70, height: 22))
         quit.title = "Quit"; quit.bezelStyle = .rounded
         quit.target = NSApp
@@ -313,6 +331,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         triedHardcodedFallback = false
         stationRetryCount = 0
         updateStationButtonTitle()
+        UserDefaults.standard.set(currentStationIdx, forKey: "focusRadio.stationIdx")
         startPlayingCurrent()
     }
 
@@ -350,6 +369,64 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     @objc func volumeChanged() {
         volume = Float(volumeSlider.doubleValue)
         player?.volume = volume
+        UserDefaults.standard.set(volume, forKey: "focusRadio.volume")
+    }
+
+    @objc func showAbout() {
+        popover.performClose(nil)
+        let base: [NSAttributedString.Key: Any] = [
+            .foregroundColor: NSColor.secondaryLabelColor,
+            .font: NSFont.systemFont(ofSize: 11),
+        ]
+        let credits = NSMutableAttributedString(string: "MIT License\n", attributes: base)
+        var linkAttrs = base
+        linkAttrs[.link] = URL(string: "https://github.com/Inhum/focus-radio")!
+        linkAttrs[.foregroundColor] = NSColor.linkColor
+        credits.append(NSAttributedString(string: "github.com/Inhum/focus-radio", attributes: linkAttrs))
+        NSApp.activate(ignoringOtherApps: true)
+        NSApp.orderFrontStandardAboutPanel(options: [.credits: credits])
+    }
+
+    // --- Media keys + Now Playing (Control Center) ---
+    // Регистрируем команды в MPRemoteCommandCenter и обновляем NowPlayingInfoCenter
+    // при старте/остановке. macOS маршрутизирует физическую Play/Pause клавишу тому
+    // приложению, чья карточка сейчас в Now Playing — то есть нам, пока мы играем.
+    func setupMediaControls() {
+        let c = MPRemoteCommandCenter.shared()
+        c.togglePlayPauseCommand.addTarget { [weak self] _ in
+            self?.togglePlay(); return .success
+        }
+        c.playCommand.addTarget { [weak self] _ in
+            guard let self = self else { return .commandFailed }
+            if !self.isPlaying { self.togglePlay() }
+            return .success
+        }
+        c.pauseCommand.addTarget { [weak self] _ in
+            guard let self = self else { return .commandFailed }
+            if self.isPlaying { self.togglePlay() }
+            return .success
+        }
+    }
+
+    func updateNowPlaying(playing: Bool) {
+        let center = MPNowPlayingInfoCenter.default()
+        guard playing else {
+            center.nowPlayingInfo = nil
+            center.playbackState = .stopped
+            return
+        }
+        let s = stations[currentStationIdx]
+        var info: [String: Any] = [
+            MPMediaItemPropertyTitle: "\(s.name) · \(s.genre)",
+            MPMediaItemPropertyArtist: s.provider,
+            MPNowPlayingInfoPropertyIsLiveStream: true,
+            MPNowPlayingInfoPropertyPlaybackRate: 1.0,
+        ]
+        if let icon = NSApp.applicationIconImage {
+            info[MPMediaItemPropertyArtwork] = MPMediaItemArtwork(boundsSize: icon.size) { _ in icon }
+        }
+        center.nowPlayingInfo = info
+        center.playbackState = .playing
     }
 
     // Полностью разбираем плеер и связанные обозреватели.
@@ -375,6 +452,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         isPlaying = false
         playButton?.title = "▶ Play"
         statusLabel?.stringValue = "Paused"
+        updateNowPlaying(playing: false)
         rlog("STOP")
     }
 
@@ -507,6 +585,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
                 self.declaredPlaying = true
                 self.watchdog?.invalidate(); self.watchdog = nil
                 self.statusLabel?.stringValue = "♪ \(station.provider) — \(station.name)"
+                self.updateNowPlaying(playing: true)
                 rlog("PLAYING \(station.name) t=\(now) buffered=\(buffered) bytes=\(bytes)")
             }
         }

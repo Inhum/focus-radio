@@ -6,31 +6,31 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - ОС: macOS (Darwin), shell zsh.
 
-## Что лежит в репо
+## Что это
 
-Это песочница для маленьких самодостаточных артефактов, не библиотека и не пакет:
+**Focus Radio** — однофайловое меню-бар приложение для macOS (AppKit + AVFoundation + MediaPlayer). Воспроизводит онлайн-радио для фокусной работы. 14 станций сгруппированы по провайдерам (SomaFM / Radio Paradise / NTS Mixtapes). SomaFM URL обновляются на старте через `.pls`-файлы.
 
-- **`radio.swift`** — однофайловое меню-бар приложение для macOS (AppKit + AVFoundation). Воспроизводит онлайн-радио для фокусной работы. 14 станций сгруппированы по провайдерам (SomaFM / Radio Paradise / NTS Mixtapes). SomaFM URL обновляются на старте через `.pls`-файлы.
-- **`invaders.html`** — однофайловая игра Space Invaders (Canvas + Web Audio). Открывается напрямую в браузере, без сборки.
-- **`probe.swift`** — отдельный диагностический скрипт для проверки одного URL через `AVPlayer`. Используется для изоляции сетевых/AVFoundation-проблем от логики `radio.swift`.
+Весь код лежит в `radio.swift` (единственный source-файл). Всё остальное вокруг — обвязка `.app`-бандла и открытого репозитория (Info.plist, скрипты, шаблоны GitHub).
 
 ## Сборка и запуск
 
+Всё делается через скрипты в `scripts/`, без Xcode — нужны только Command Line Tools (`xcode-select --install`).
+
 ```sh
-# radio.swift — основное приложение
-swiftc -O radio.swift -o radio && ./radio
-
-# Самотест всех 14 станций (выходит с ненулевым кодом, если не все играют)
-./radio --test-all 2>&1 | tee radio.test.log
-
-# Прогон одной станции по индексу (0..13) с подробным логом
-./radio --test-one 5
-
-# probe.swift — минимальный AVPlayer-тест одного URL
-swiftc -O probe.swift -o probe && ./probe "https://ice6.somafm.com/dronezone-256-mp3"
+./scripts/run.sh           # debug-сборка + запуск с логами в терминале (Ctrl+C = стоп)
+./scripts/build.sh         # release-сборка → build/FocusRadio.app
+./scripts/test.sh          # сборка + --test-all по всем станциям (exit != 0, если не все играют)
+./scripts/package.sh       # release + build/FocusRadio-<версия>.dmg с ярлыком /Applications
+./scripts/make-icon.sh     # перегенерить Resources/FocusRadio.icns + docs/icon.png
 ```
 
-Тестов нет, линтеров нет — единственный «зелёный» сигнал это `--test-all` с exit 0.
+Ручной вызов самотеста одной станции по индексу (0..13):
+
+```sh
+./build/FocusRadio.app/Contents/MacOS/FocusRadio --test-one 5
+```
+
+Юнит-тестов нет, линтеров нет — единственный «зелёный» сигнал это `./scripts/test.sh` с exit 0. Но `--test-all` бьёт по живым Icecast-серверам, часть станций периодически отказывают из-за сети/гео-блока (см. «Известные мёртвые URL» ниже) — поэтому в CI самотест **не** запускается, только сборка.
 
 ## Архитектура `radio.swift`
 
@@ -42,18 +42,33 @@ swiftc -O probe.swift -o probe && ./probe "https://ice6.somafm.com/dronezone-256
 - **`teardownPlayer`:** единая точка снятия плеера, KVO и notification-обозревателей. Любая транзакция (stop, выбор другой станции, фоллбэк, выход) обязана идти через неё, иначе остаются стейл-обозреватели и «переключение туда-обратно» даёт тишину. Особенно важен `replaceCurrentItem(with: nil)` перед `player = nil`.
 - **Режимы запуска:** `--test-all` итерирует станции через цепочку `Timer`-ов, не блокируя главный run loop. Гонка с AVPlayer возникает, если попытаться драйвить run loop вручную через `RunLoop.main.run(until:)` — AVPlayer перестаёт обращаться по сети. `testWaitTimer` регистрируется в `.common` mode (`RunLoop.main.add(timer, forMode: .common)`) — в `.default` mode AVPlayer может удерживать RunLoop в другом mode и таймер перестаёт тикать, что ведёт к elapsed=500s+ при 40s-таймауте.
 - **Закрытие поповера в `.accessory`-приложении:** `popover.behavior = .transient` *не* закрывает окно при клике в другом приложении или по рабочему столу — только при кликах внутри своего процесса. Фикс — глобальный `NSEvent.addGlobalMonitorForEvents` на `.leftMouseDown`/`.rightMouseDown`, ставится в `togglePopover` при показе и снимается в `popoverDidClose`. Не упрощать обратно к одному `.transient`: визуально работает в окне Xcode, ломается в реальном использовании.
+- **Media keys / Now Playing:** `setupMediaControls` регистрирует `togglePlayPause`/`play`/`pause` в `MPRemoteCommandCenter`, а `updateNowPlaying(playing:)` пишет/сбрасывает `MPNowPlayingInfoCenter.default().nowPlayingInfo` при старте реального воспроизведения (`declaredPlaying = true`) и в `stopPlaying`. macOS маршрутизирует физическую Play/Pause клавишу тому приложению, чья карточка сейчас в Now Playing — то есть нам, пока играем. Если забыть сбросить `nowPlayingInfo` в `stopPlaying`, система будет считать, что мы всё ещё играем, и кнопка будет доставаться нам даже когда стоим на паузе.
+- **Персистенс через `UserDefaults`:** ключи `focusRadio.stationIdx` (Int) и `focusRadio.volume` (Float). Сохраняем в `selectStation` и `volumeChanged`; загружаем в `applicationDidFinishLaunching` **до** создания UI (но после раннего возврата из test-режимов, чтобы `--test-all` не завёлся с прошлой громкостью 0.05).
 
 ## Диагностика
 
-Все события (CONNECT, status=, acclog, errlog, WATCHDOG, FALLBACK, PLAYING, RETRY) пишутся в stderr с миллисекундной меткой через `rlog(_:)`. При расследовании молчания первым делом смотреть в `radio.test.log`: наличие `acclog: bytes=N` означает, что байты реально текут; отсутствие `status=1 err=nil` после `CONNECT` означает, что `AVPlayerItem` так и не вышел в `readyToPlay`.
+Все события (CONNECT, status=, acclog, errlog, WATCHDOG, FALLBACK, PLAYING, RETRY) пишутся в stderr с миллисекундной меткой через `rlog(_:)`. Проще всего запустить через `./scripts/run.sh` — логи прямо в терминале. При расследовании молчания: наличие `acclog: bytes=N` означает, что байты реально текут; отсутствие `status=1 err=nil` после `CONNECT` означает, что `AVPlayerItem` так и не вышел в `readyToPlay`.
 
-`probe.swift` полезен, когда нужно проверить, виноват ли конкретный URL/сеть, а не логика `radio.swift`. Сетевая нестабильность Icecast-серверов — реальная причина части провалов в `--test-all`; одна и та же URL у `probe` тоже иногда не запускается.
+Сетевая нестабильность Icecast-серверов — реальная причина части провалов в `--test-all`; одни и те же URL иногда не запускаются даже через отдельный `AVPlayer` вне нашего кода.
 
-**Известные мёртвые URL (подтверждено `probe`):**
-- `stream.radioparadise.com/global-128` — сервер отдаёт `audio/aac`, но `probe` показывает `bytes=0` на протяжении всех 12 с. AVPlayer не воспроизводит.
-- `stream-mixtape-geo.ntslive.net/mixtape{,2,3,35}` — CDN редиректит (302) на HTML-страницу (геоблок). Non-geo вариант `stream-mixtape.ntslive.net` — DNS не существует. Probe показывает ~0.496 с буфера (HTML-ответ, распарсенный как 21 AAC-фрейм) — ниже порога `buffered > 0.5`.
+**Известные мёртвые URL (по логам от 2026-05):**
+- `stream.radioparadise.com/global-128` — сервер отдаёт `audio/aac`, но AVPlayer получает `bytes=0` на протяжении всех 12 с воспроизведения.
+- `stream-mixtape-geo.ntslive.net/mixtape{,2,3,35}` — CDN редиректит (302) на HTML-страницу (геоблок). Non-geo вариант `stream-mixtape.ntslive.net` — DNS не существует.
+
+## Устройство репозитория
+
+```
+radio.swift                 весь код
+Resources/Info.plist        манифест .app-бандла (LSUIElement=true, версия и т.д.)
+Resources/FocusRadio.icns   иконка (генерится make-icon.sh)
+scripts/*.sh, make-icon.swift сборка/запуск/пакетирование/иконка
+docs/icon.png, docs/*.png   для README (иконка + скриншоты)
+.github/                    templates + CI (сборка, но не --test-all — см. выше)
+README.md / README.ru.md    английская и русская версии
+```
 
 ## Соглашения
 
 - Комментарии в Swift-коде — на русском (UTF-8 без BOM, как требует Swift).
-- Обновление файла и его запуск — двумя отдельными шагами, чтобы пользователь видел вывод.
+- Изменение файла и его запуск — двумя отдельными шагами, чтобы пользователь видел вывод.
+- Ни одной сторонней зависимости — только системные фреймворки. Держим этот инвариант.

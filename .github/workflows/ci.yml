@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: swiftc --version
+
+      - name: Build
+        run: ./scripts/build.sh
+
+      # The self-test (--test-all) is not run in CI: it hits real Icecast servers
+      # that are frequently flaky and some are geo-blocked from GitHub runners.
+      # Run it locally with `./scripts/test.sh` before opening a PR.

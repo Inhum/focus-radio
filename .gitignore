@@ -1,3 +1,12 @@
+# Build artifacts
+build/
+*.app
+*.dmg
+radio
+
+# macOS
 .DS_Store
+
+# Claude Code local
 .claude/scheduled_tasks.lock
 .claude/settings.local.json
