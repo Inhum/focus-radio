@@ -22,7 +22,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./scripts/test.sh          # сборка + --test-all по всем станциям (exit != 0, если не все играют)
 ./scripts/package.sh       # release + build/FocusRadio-<версия>.dmg с ярлыком /Applications
 ./scripts/make-icon.sh     # перегенерить Resources/FocusRadio.icns + docs/icon.png
+./scripts/make-cert.sh     # один раз: self-signed сертификат «Focus Radio Self-Signed» в login keychain
 ```
+
+`build.sh` подписывает бандл сертификатом «Focus Radio Self-Signed», если он есть в связке ключей (стабильная идентичность → выданные разрешения держатся между сборками), иначе откатывается на ad-hoc — поэтому сторонние сборщики без сертификата собирают без ошибок. Self-signed **не** снимает Gatekeeper-предупреждение при первом запуске (нужен Apple Developer ID + нотаризация).
 
 Ручной вызов самотеста одной станции по индексу (0..13):
 
