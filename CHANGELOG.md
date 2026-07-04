@@ -21,7 +21,7 @@ First public release.
 - Popover auto-closes on click outside the app (global `NSEvent` monitor).
 - `--test-all` self-test that iterates all stations and exits non-zero if any fail;
   `--test-one <idx>` for verbose single-station diagnostics.
-- App icon (equalizer bars on a warm gradient), generated via CoreGraphics
+- App icon (concentric circles on a warm orange gradient), generated via CoreGraphics
   (`scripts/make-icon.sh`).
 
 ### Known limitations
