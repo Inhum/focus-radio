@@ -89,6 +89,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var statusItem: NSStatusItem!
     var popover: NSPopover!
     var eventMonitor: Any?
+    var aboutWindow: NSWindow?
     var player: AVPlayer?
     var currentItem: AVPlayerItem?
     var watchdog: Timer?
@@ -374,17 +375,77 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
     @objc func showAbout() {
         popover.performClose(nil)
-        let base: [NSAttributedString.Key: Any] = [
-            .foregroundColor: NSColor.secondaryLabelColor,
-            .font: NSFont.systemFont(ofSize: 11),
-        ]
-        let credits = NSMutableAttributedString(string: "MIT License\n", attributes: base)
-        var linkAttrs = base
-        linkAttrs[.link] = URL(string: "https://github.com/Inhum/focus-radio")!
-        linkAttrs[.foregroundColor] = NSColor.linkColor
-        credits.append(NSAttributedString(string: "github.com/Inhum/focus-radio", attributes: linkAttrs))
         NSApp.activate(ignoringOtherApps: true)
-        NSApp.orderFrontStandardAboutPanel(options: [.credits: credits])
+
+        // Окно создаётся один раз; повторный клик по «About» просто поднимает его наверх.
+        if let w = aboutWindow {
+            w.makeKeyAndOrderFront(nil)
+            return
+        }
+
+        // Версию и билд берём из Info.plist бандла — так же, как их показывала
+        // стандартная панель («Version 0.1.0 (1)»).
+        let info = Bundle.main.infoDictionary
+        let short = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+
+        let content = NSView(frame: NSRect(x: 0, y: 0, width: 340, height: 300))
+
+        // Наша иконка приложения (из Resources/FocusRadio.icns через бандл).
+        let icon = NSImageView(frame: NSRect(x: (340 - 96) / 2, y: 186, width: 96, height: 96))
+        icon.image = NSApp.applicationIconImage
+        icon.imageScaling = .scaleProportionallyUpOrDown
+        content.addSubview(icon)
+
+        let name = NSTextField(labelWithString: "Focus Radio")
+        name.font = NSFont.systemFont(ofSize: 17, weight: .bold)
+        name.alignment = .center
+        name.frame = NSRect(x: 0, y: 156, width: 340, height: 24)
+        content.addSubview(name)
+
+        let version = NSTextField(labelWithString: "Version \(short) (\(build))")
+        version.font = NSFont.systemFont(ofSize: 12)
+        version.textColor = .secondaryLabelColor
+        version.alignment = .center
+        version.frame = NSRect(x: 0, y: 132, width: 340, height: 18)
+        content.addSubview(version)
+
+        let tagline = NSTextField(labelWithString: "Online radio for focused work")
+        tagline.font = NSFont.systemFont(ofSize: 12)
+        tagline.alignment = .center
+        tagline.frame = NSRect(x: 20, y: 102, width: 300, height: 20)
+        content.addSubview(tagline)
+
+        // Настоящая кнопка вместо инлайновой текстовой ссылки — как в кастомных панелях.
+        let gh = NSButton(frame: NSRect(x: (340 - 100) / 2, y: 60, width: 100, height: 28))
+        gh.title = "GitHub"
+        gh.bezelStyle = .rounded
+        gh.target = self
+        gh.action = #selector(openRepo)
+        content.addSubview(gh)
+
+        let footer = NSTextField(labelWithString: "© 2026 Ivan Ushakov · MIT License")
+        footer.font = NSFont.systemFont(ofSize: 10)
+        footer.textColor = .tertiaryLabelColor
+        footer.alignment = .center
+        footer.frame = NSRect(x: 0, y: 20, width: 340, height: 16)
+        content.addSubview(footer)
+
+        let window = NSWindow(
+            contentRect: content.frame,
+            styleMask: [.titled, .closable],
+            backing: .buffered, defer: false)
+        window.title = "About Focus Radio"
+        window.contentView = content
+        window.isReleasedWhenClosed = false   // держим ссылку в aboutWindow, не даём освободить
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+        aboutWindow = window
+    }
+
+    // Открыть репозиторий в браузере — действие кнопки GitHub в окне About.
+    @objc func openRepo() {
+        NSWorkspace.shared.open(URL(string: "https://github.com/Inhum/focus-radio")!)
     }
 
     // --- Media keys + Now Playing (Control Center) ---
