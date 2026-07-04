@@ -54,21 +54,37 @@ var stations: [Station] = [
                "https://ice4.somafm.com/sf1033-128-mp3"],
         plsURL: "https://api.somafm.com/sf1033130.pls"),
 
-    Station(provider: "Radio Paradise", name: "Mellow Mix", genre: "mellow eclectic",
-        urls: ["https://stream.radioparadise.com/mellow-128"], plsURL: nil),
-    Station(provider: "Radio Paradise", name: "Main Mix",   genre: "eclectic",
-        urls: ["https://stream.radioparadise.com/mp3-128"],   plsURL: nil),
-    Station(provider: "Radio Paradise", name: "Global Mix", genre: "world",
-        urls: ["https://stream.radioparadise.com/global-128"], plsURL: nil),
+    // Доп. каналы SomaFM. Все проверены реальным воспроизведением из RU (--test-one).
+    // ice4/ice6/ice2 — зеркала одного слага; PLS нет (ice-URL стабильны).
+    Station(provider: "SomaFM", name: "Space Station Soma", genre: "ambient / space",
+        urls: ["https://ice4.somafm.com/spacestation-128-mp3",
+               "https://ice6.somafm.com/spacestation-128-mp3",
+               "https://ice2.somafm.com/spacestation-128-mp3"], plsURL: nil),
+    Station(provider: "SomaFM", name: "Sonic Universe", genre: "avant jazz",
+        urls: ["https://ice4.somafm.com/sonicuniverse-256-mp3",
+               "https://ice6.somafm.com/sonicuniverse-256-mp3",
+               "https://ice2.somafm.com/sonicuniverse-256-mp3"], plsURL: nil),
+    Station(provider: "SomaFM", name: "The Trip", genre: "psychill / prog",
+        urls: ["https://ice4.somafm.com/thetrip-128-mp3",
+               "https://ice6.somafm.com/thetrip-128-mp3",
+               "https://ice2.somafm.com/thetrip-128-mp3"], plsURL: nil),
+    Station(provider: "SomaFM", name: "Fluid", genre: "instrumental hip-hop",
+        urls: ["https://ice4.somafm.com/fluid-128-mp3",
+               "https://ice6.somafm.com/fluid-128-mp3",
+               "https://ice2.somafm.com/fluid-128-mp3"], plsURL: nil),
+    Station(provider: "SomaFM", name: "Secret Agent", genre: "spy lounge",
+        urls: ["https://ice4.somafm.com/secretagent-128-mp3",
+               "https://ice6.somafm.com/secretagent-128-mp3",
+               "https://ice2.somafm.com/secretagent-128-mp3"], plsURL: nil),
+    Station(provider: "SomaFM", name: "Lush", genre: "vocal chillout",
+        urls: ["https://ice4.somafm.com/lush-128-mp3",
+               "https://ice6.somafm.com/lush-128-mp3",
+               "https://ice2.somafm.com/lush-128-mp3"], plsURL: nil),
 
-    Station(provider: "NTS Mixtapes", name: "Slow Focus",  genre: "beatless ambient",
-        urls: ["https://stream-mixtape-geo.ntslive.net/mixtape"],   plsURL: nil),
-    Station(provider: "NTS Mixtapes", name: "Low Key",     genre: "chill / downtempo",
-        urls: ["https://stream-mixtape-geo.ntslive.net/mixtape2"],  plsURL: nil),
-    Station(provider: "NTS Mixtapes", name: "Sheet Music", genre: "classical",
-        urls: ["https://stream-mixtape-geo.ntslive.net/mixtape35"], plsURL: nil),
-    Station(provider: "NTS Mixtapes", name: "Expansions",  genre: "spiritual jazz",
-        urls: ["https://stream-mixtape-geo.ntslive.net/mixtape3"],  plsURL: nil),
+    // Nightwave Plaza — независимый vaporwave-поток. Единственный не-SomaFM, прошедший
+    // проверку реальным воспроизведением из RU (RP/NTS/FIP и пр. глушит гео-блок CDN).
+    Station(provider: "Nightwave Plaza", name: "Plaza", genre: "vaporwave / lo-fi",
+        urls: ["https://radio.plaza.one/mp3"], plsURL: nil),
 ]
 
 // Снимок исходных хардкодных URL — для повторного fallback после неудачи с PLS-серверами.
@@ -83,6 +99,87 @@ let logFmt: DateFormatter = {
 func rlog(_ s: String) {
     let line = "[\(logFmt.string(from: Date()))] \(s)\n"
     FileHandle.standardError.write(line.data(using: .utf8)!)
+}
+
+// Помощник локализации. Строки лежат в Resources/<lang>.lproj/Localizable.strings.
+// Язык выбирается автоматически по системным настройкам (en — база, ru — перевод).
+func L(_ key: String, _ args: CVarArg...) -> String {
+    let format = NSLocalizedString(key, comment: "")
+    return args.isEmpty ? format : String(format: format, arguments: args)
+}
+
+// Проверка обновлений через публичный GitHub Releases API (репозиторий публичный →
+// запрос анонимный, без токена). Это ТОЛЬКО уведомление: если версия новее — приложение
+// предлагает открыть страницу релиза, скачивание и замену пользователь делает сам.
+struct Update {
+    let version: String     // без ведущего "v", напр. "0.2.0"
+    let pageURL: URL        // html_url релиза на GitHub
+}
+
+enum Updater {
+    static let releasesAPI = URL(string: "https://api.github.com/repos/Inhum/focus-radio/releases/latest")!
+
+    static var currentVersion: String {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0"
+    }
+
+    /// completion(.success(update)) — доступна версия новее; .success(nil) — уже последняя.
+    static func check(completion: @escaping (Result<Update?, Error>) -> Void) {
+        var req = URLRequest(url: releasesAPI)
+        req.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
+        req.setValue("FocusRadio", forHTTPHeaderField: "User-Agent")   // GitHub API отклоняет запрос без User-Agent
+        req.timeoutInterval = 20
+
+        URLSession.shared.dataTask(with: req) { data, resp, err in
+            if let err = err { return completion(.failure(err)) }
+            guard let http = resp as? HTTPURLResponse, let data = data else {
+                return completion(.failure(UpdateError.noResponse))
+            }
+            guard (200..<300).contains(http.statusCode) else {
+                return completion(.failure(UpdateError.http(http.statusCode)))
+            }
+            guard let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let tag = obj["tag_name"] as? String,
+                  let page = (obj["html_url"] as? String).flatMap(URL.init(string:)) else {
+                return completion(.failure(UpdateError.decode))
+            }
+            let latest = normalize(tag)
+            if isNewer(latest, than: normalize(currentVersion)) {
+                completion(.success(Update(version: latest, pageURL: page)))
+            } else {
+                completion(.success(nil))
+            }
+        }.resume()
+    }
+
+    /// Убирает ведущие не-цифры из тега: "v0.2.0" → "0.2.0".
+    static func normalize(_ tag: String) -> String {
+        let s = tag.trimmingCharacters(in: .whitespaces)
+        return String(s.drop(while: { !$0.isNumber }))
+    }
+
+    /// Сравнение версий покомпонентно (semver-подобно): 0.10.0 > 0.9.0.
+    static func isNewer(_ candidate: String, than current: String) -> Bool {
+        let a = candidate.split(separator: ".").map { Int($0) ?? 0 }
+        let b = current.split(separator: ".").map { Int($0) ?? 0 }
+        for i in 0..<max(a.count, b.count) {
+            let x = i < a.count ? a[i] : 0
+            let y = i < b.count ? b[i] : 0
+            if x != y { return x > y }
+        }
+        return false
+    }
+
+    enum UpdateError: Error, LocalizedError {
+        case noResponse, http(Int), decode
+        var errorDescription: String? {
+            switch self {
+            case .noResponse:  return L("update.err.noResponse")
+            case .http(let c): return L("update.err.http", c)
+            case .decode:      return L("update.err.decode")
+            }
+        }
+    }
 }
 
 class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
@@ -124,6 +221,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     var playButton: NSButton!
     var volumeSlider: NSSlider!
     var statusLabel: NSTextField!
+    var statusDot: NSImageView!          // цветной индикатор здоровья станции
+
+    var availableUpdate: Update?         // заполняется тихой проверкой при старте
+    var aboutUpdateLabel: NSTextField?   // строка результата проверки в окне About
+    var aboutCheckButton: NSButton?      // кнопка «Проверить обновления» / «Скачать …»
 
     var isTestMode = false
 
@@ -184,6 +286,18 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         fetchSomaFMURLs()
         setupMediaControls()
+
+        // Тихая проверка обновлений при старте: только запоминаем результат и, если стоим
+        // на месте, показываем ненавязчивую подсказку в статусе (детали — в окне About).
+        Updater.check { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self = self, case .success(let up?) = result else { return }
+                self.availableUpdate = up
+                if !self.isPlaying {
+                    self.setStatus(L("status.updateAvailable", up.version), .idle)
+                }
+            }
+        }
     }
 
     // Запрашиваем .pls для каждой SomaFM-станции и обновляем список URL.
@@ -257,7 +371,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         v.addSubview(stationButton)
 
         playButton = NSButton(frame: NSRect(x: 16, y: 65, width: 90, height: 28))
-        playButton.title = "▶ Play"
+        playButton.title = L("ui.play")
         playButton.bezelStyle = .rounded
         playButton.target = self
         playButton.action = #selector(togglePlay)
@@ -270,23 +384,33 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         volumeSlider.action = #selector(volumeChanged)
         v.addSubview(volumeSlider)
 
-        statusLabel = NSTextField(labelWithString: "Ready")
-        statusLabel.frame = NSRect(x: 16, y: 32, width: 308, height: 18)
+        statusDot = NSImageView(frame: NSRect(x: 16, y: 33, width: 12, height: 12))
+        statusDot.imageScaling = .scaleProportionallyUpOrDown
+        statusDot.isHidden = true
+        v.addSubview(statusDot)
+
+        statusLabel = NSTextField(labelWithString: L("status.ready"))
+        statusLabel.frame = NSRect(x: 33, y: 32, width: 291, height: 18)
         statusLabel.textColor = .secondaryLabelColor
         statusLabel.font = NSFont.systemFont(ofSize: 11)
         v.addSubview(statusLabel)
 
-        let about = NSButton(frame: NSRect(x: 16, y: 4, width: 80, height: 22))
-        about.title = "About"; about.bezelStyle = .rounded
+        let about = NSButton(frame: NSRect(x: 16, y: 4, width: 120, height: 22))
+        about.title = L("ui.about"); about.bezelStyle = .rounded
         about.target = self
         about.action = #selector(showAbout)
         v.addSubview(about)
 
         let quit = NSButton(frame: NSRect(x: 254, y: 4, width: 70, height: 22))
-        quit.title = "Quit"; quit.bezelStyle = .rounded
+        quit.title = L("ui.quit"); quit.bezelStyle = .rounded
         quit.target = NSApp
         quit.action = #selector(NSApplication.terminate(_:))
         v.addSubview(quit)
+
+        // Если тихая проверка при старте нашла обновление — сразу показываем подсказку.
+        if let up = availableUpdate {
+            setStatus(L("status.updateAvailable", up.version), .idle)
+        }
 
         vc.view = v
         return vc
@@ -389,10 +513,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         let short = info?["CFBundleShortVersionString"] as? String ?? "?"
         let build = info?["CFBundleVersion"] as? String ?? "?"
 
-        let content = NSView(frame: NSRect(x: 0, y: 0, width: 340, height: 300))
+        let content = NSView(frame: NSRect(x: 0, y: 0, width: 340, height: 344))
 
         // Наша иконка приложения (из Resources/FocusRadio.icns через бандл).
-        let icon = NSImageView(frame: NSRect(x: (340 - 96) / 2, y: 186, width: 96, height: 96))
+        let icon = NSImageView(frame: NSRect(x: (340 - 96) / 2, y: 232, width: 96, height: 96))
         icon.image = NSApp.applicationIconImage
         icon.imageScaling = .scaleProportionallyUpOrDown
         content.addSubview(icon)
@@ -400,31 +524,48 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         let name = NSTextField(labelWithString: "Focus Radio")
         name.font = NSFont.systemFont(ofSize: 17, weight: .bold)
         name.alignment = .center
-        name.frame = NSRect(x: 0, y: 156, width: 340, height: 24)
+        name.frame = NSRect(x: 0, y: 202, width: 340, height: 24)
         content.addSubview(name)
 
-        let version = NSTextField(labelWithString: "Version \(short) (\(build))")
+        let version = NSTextField(labelWithString: L("about.version", short, build))
         version.font = NSFont.systemFont(ofSize: 12)
         version.textColor = .secondaryLabelColor
         version.alignment = .center
-        version.frame = NSRect(x: 0, y: 132, width: 340, height: 18)
+        version.frame = NSRect(x: 0, y: 178, width: 340, height: 18)
         content.addSubview(version)
 
-        let tagline = NSTextField(labelWithString: "Online radio for focused work")
+        let tagline = NSTextField(labelWithString: L("about.tagline"))
         tagline.font = NSFont.systemFont(ofSize: 12)
         tagline.alignment = .center
-        tagline.frame = NSRect(x: 20, y: 102, width: 300, height: 20)
+        tagline.frame = NSRect(x: 20, y: 148, width: 300, height: 20)
         content.addSubview(tagline)
 
-        // Настоящая кнопка вместо инлайновой текстовой ссылки — как в кастомных панелях.
-        let gh = NSButton(frame: NSRect(x: (340 - 100) / 2, y: 60, width: 100, height: 28))
-        gh.title = "GitHub"
+        // Кнопки в столбик — русские подписи длиннее английских, в ряд не помещаются.
+        let gh = NSButton(frame: NSRect(x: (340 - 110) / 2, y: 106, width: 110, height: 28))
+        gh.title = L("about.github")
         gh.bezelStyle = .rounded
         gh.target = self
         gh.action = #selector(openRepo)
         content.addSubview(gh)
 
-        let footer = NSTextField(labelWithString: "© 2026 Ivan Ushakov · MIT License")
+        let check = NSButton(frame: NSRect(x: (340 - 220) / 2, y: 72, width: 220, height: 28))
+        check.bezelStyle = .rounded
+        check.target = self
+        content.addSubview(check)
+        aboutCheckButton = check
+
+        let updateLabel = NSTextField(labelWithString: "")
+        updateLabel.font = NSFont.systemFont(ofSize: 11)
+        updateLabel.textColor = .secondaryLabelColor
+        updateLabel.alignment = .center
+        updateLabel.frame = NSRect(x: 20, y: 48, width: 300, height: 16)
+        content.addSubview(updateLabel)
+        aboutUpdateLabel = updateLabel
+
+        // Если тихая проверка при старте уже нашла обновление — показываем сразу «Скачать …».
+        applyUpdateStateToAbout()
+
+        let footer = NSTextField(labelWithString: L("about.copyright"))
         footer.font = NSFont.systemFont(ofSize: 10)
         footer.textColor = .tertiaryLabelColor
         footer.alignment = .center
@@ -435,12 +576,56 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             contentRect: content.frame,
             styleMask: [.titled, .closable],
             backing: .buffered, defer: false)
-        window.title = "About Focus Radio"
+        window.title = L("about.windowTitle")
         window.contentView = content
         window.isReleasedWhenClosed = false   // держим ссылку в aboutWindow, не даём освободить
         window.center()
         window.makeKeyAndOrderFront(nil)
         aboutWindow = window
+    }
+
+    // Приводит кнопку/строку обновлений в окне About к текущему состоянию availableUpdate.
+    func applyUpdateStateToAbout() {
+        guard let check = aboutCheckButton else { return }
+        if let up = availableUpdate {
+            check.title = L("about.update.download", up.version)
+            check.action = #selector(openReleasePage)
+            aboutUpdateLabel?.textColor = .systemGreen
+            aboutUpdateLabel?.stringValue = L("about.update.available", up.version)
+        } else {
+            check.title = L("about.update.check")
+            check.action = #selector(checkForUpdates)
+            aboutUpdateLabel?.stringValue = ""
+        }
+    }
+
+    @objc func checkForUpdates() {
+        aboutCheckButton?.isEnabled = false
+        aboutUpdateLabel?.textColor = .secondaryLabelColor
+        aboutUpdateLabel?.stringValue = L("about.update.checking")
+        Updater.check { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.aboutCheckButton?.isEnabled = true
+                switch result {
+                case .success(let up):
+                    self.availableUpdate = up
+                    if up != nil {
+                        self.applyUpdateStateToAbout()
+                    } else {
+                        self.aboutUpdateLabel?.textColor = .secondaryLabelColor
+                        self.aboutUpdateLabel?.stringValue = L("about.update.upToDate")
+                    }
+                case .failure(let err):
+                    self.aboutUpdateLabel?.textColor = .systemRed
+                    self.aboutUpdateLabel?.stringValue = err.localizedDescription
+                }
+            }
+        }
+    }
+
+    @objc func openReleasePage() {
+        if let up = availableUpdate { NSWorkspace.shared.open(up.pageURL) }
     }
 
     // Открыть репозиторий в браузере — действие кнопки GitHub в окне About.
@@ -511,8 +696,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     func stopPlaying() {
         teardownPlayer()
         isPlaying = false
-        playButton?.title = "▶ Play"
-        statusLabel?.stringValue = "Paused"
+        playButton?.title = L("ui.play")
+        setStatus(L("status.paused"), .idle)
         updateNowPlaying(playing: false)
         rlog("STOP")
     }
@@ -520,7 +705,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     // Учитывает PLS race: если станция ещё не получила свежие URL — ждёт до 1.5 с.
     func startPlayingCurrent() {
         let idx = currentStationIdx
-        statusLabel?.stringValue = "Refreshing servers…"
+        setStatus(L("status.refreshing"), .connecting)
         waitForPLS(idx: idx, timeout: 1.5) { [weak self] in
             guard let self = self, self.currentStationIdx == idx else { return }
             self.tryCurrentURL()
@@ -556,8 +741,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             }
             teardownPlayer()
             isPlaying = false
-            playButton?.title = "▶ Play"
-            statusLabel?.stringValue = "All sources unavailable for \(station.name)"
+            playButton?.title = L("ui.play")
+            setStatus(L("status.unavailable", station.name), .failed)
             rlog("EXHAUSTED \(station.name)")
             return
         }
@@ -575,8 +760,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         player = p
         currentItem = item
         isPlaying = true
-        playButton?.title = "⏸ Pause"
-        statusLabel?.stringValue = "Connecting \(station.name)…"
+        playButton?.title = L("ui.pause")
+        setStatus(L("status.connecting", station.name), .connecting)
         rlog("CONNECT \(station.name) url[\(currentURLIdx)]=\(urlStr)")
 
         // KVO
@@ -633,9 +818,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             let bytesGrowing = bytes > lastBytes && bytes > 4096
             lastBytes = bytes
             let okStatus = capturedPlayer.timeControlStatus == .playing
-            // Успех = плеер играет И байты приходят (или буфер заполнен, или currentTime тикает)
+            // Успех = плеер играет И поток реально ПРОДВИГАЕТСЯ: растут байты или currentTime.
+            // Статический буфер (loadedTimeRanges > 0.5) НЕ считаем игрой — RP/NTS набирают
+            // стартовый буфер ~1с и замирают на t=0, а curl тянет их поток нормально; засчёт
+            // буфера давал ложный «зелёный». Признак настоящей игры — движение, не наличие данных.
             let timeAdvancing = now.isFinite && now > self.lastObservedTime + 0.05
-            let realPlaying = okStatus && (bytesGrowing || buffered > 0.5 || timeAdvancing)
+            let realPlaying = okStatus && (bytesGrowing || timeAdvancing)
             if realPlaying {
                 self.advanceChecks += 1
             } else {
@@ -645,7 +833,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             if self.advanceChecks >= 2 && !self.declaredPlaying {
                 self.declaredPlaying = true
                 self.watchdog?.invalidate(); self.watchdog = nil
-                self.statusLabel?.stringValue = "♪ \(station.provider) — \(station.name)"
+                self.setStatus(L("status.playing", station.provider, station.name), .playing)
                 self.updateNowPlaying(playing: true)
                 rlog("PLAYING \(station.name) t=\(now) buffered=\(buffered) bytes=\(bytes)")
             }
@@ -666,6 +854,25 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         rlog("FALLBACK \(station.name) url[\(currentURLIdx)] -> url[\(currentURLIdx+1)]: \(reason)")
         currentURLIdx += 1
         tryCurrentURL()
+    }
+
+    // Здоровье станции — как в Voica проверка ключа: цветной кружок рядом со статусом.
+    enum StationHealth { case idle, connecting, playing, failed }
+
+    func setStatus(_ text: String, _ health: StationHealth) {
+        statusLabel?.stringValue = text
+        guard let dot = statusDot else { return }
+        let dotImg = NSImage(systemSymbolName: "circle.fill", accessibilityDescription: nil)
+        switch health {
+        case .idle:
+            dot.isHidden = true
+        case .connecting:
+            dot.image = dotImg; dot.contentTintColor = .systemYellow; dot.isHidden = false
+        case .playing:
+            dot.image = dotImg; dot.contentTintColor = .systemGreen;  dot.isHidden = false
+        case .failed:
+            dot.image = dotImg; dot.contentTintColor = .systemRed;    dot.isHidden = false
+        }
     }
 
     func updateStatusIcon() {

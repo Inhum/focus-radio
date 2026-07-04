@@ -1,0 +1,31 @@
+/* Popover controls */
+"ui.play"  = "▶ Play";
+"ui.pause" = "⏸ Pause";
+"ui.about" = "About";
+"ui.quit"  = "Quit";
+
+/* Status line */
+"status.ready"           = "Ready";
+"status.paused"          = "Paused";
+"status.refreshing"      = "Refreshing servers…";
+"status.connecting"      = "Connecting %@…";
+"status.playing"         = "♪ %@ — %@";
+"status.unavailable"     = "All sources unavailable for %@";
+"status.updateAvailable" = "Update available: %@ — see About";
+
+/* About window */
+"about.windowTitle"      = "About Focus Radio";
+"about.version"          = "Version %@ (%@)";
+"about.tagline"          = "Online radio for focused work";
+"about.github"           = "GitHub";
+"about.copyright"        = "© 2026 Ivan Ushakov · MIT License";
+"about.update.check"     = "Check for Updates";
+"about.update.checking"  = "Checking…";
+"about.update.upToDate"  = "You're on the latest version.";
+"about.update.available" = "Update available: %@";
+"about.update.download"  = "Download %@";
+
+/* Update errors */
+"update.err.noResponse" = "No response from the server.";
+"update.err.http"       = "Server error (HTTP %d).";
+"update.err.decode"     = "Couldn't read the response.";

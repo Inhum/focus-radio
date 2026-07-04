@@ -20,6 +20,7 @@ swiftc "${SWIFT_FLAGS[@]}" -o "$APP/Contents/MacOS/$NAME" radio.swift
 
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 [ -f Resources/FocusRadio.icns ] && cp Resources/FocusRadio.icns "$APP/Contents/Resources/"
+cp -R Resources/*.lproj "$APP/Contents/Resources/"   # локализация (en/ru)
 
 # Подпись. Если есть локальный сертификат «Focus Radio Self-Signed» — подписываем им
 # (стабильная идентичность → выданные разрешения держатся между обновлениями).

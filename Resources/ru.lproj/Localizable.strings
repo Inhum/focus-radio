@@ -1,0 +1,31 @@
+/* Элементы поповера */
+"ui.play"  = "▶ Играть";
+"ui.pause" = "⏸ Пауза";
+"ui.about" = "О программе";
+"ui.quit"  = "Выход";
+
+/* Строка статуса */
+"status.ready"           = "Готово";
+"status.paused"          = "Пауза";
+"status.refreshing"      = "Обновление серверов…";
+"status.connecting"      = "Подключение к %@…";
+"status.playing"         = "♪ %@ — %@";
+"status.unavailable"     = "Нет доступных источников: %@";
+"status.updateAvailable" = "Доступно обновление %@ — см. «О программе»";
+
+/* Окно «О программе» */
+"about.windowTitle"      = "О программе Focus Radio";
+"about.version"          = "Версия %@ (%@)";
+"about.tagline"          = "Онлайн-радио для фокусной работы";
+"about.github"           = "GitHub";
+"about.copyright"        = "© 2026 Иван Ушаков · Лицензия MIT";
+"about.update.check"     = "Проверить обновления";
+"about.update.checking"  = "Проверяю…";
+"about.update.upToDate"  = "Установлена последняя версия.";
+"about.update.available" = "Доступно обновление: %@";
+"about.update.download"  = "Скачать %@";
+
+/* Ошибки проверки обновлений */
+"update.err.noResponse" = "Сервер не ответил.";
+"update.err.http"       = "Ошибка сервера (HTTP %d).";
+"update.err.decode"     = "Не удалось разобрать ответ.";
