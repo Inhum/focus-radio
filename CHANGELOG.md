@@ -4,6 +4,33 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.0] — 2026-07-05
+
+### Added
+- Bilingual UI (English / Russian), chosen automatically by the system language.
+- Station health indicator — a colored dot next to the status line: green (playing),
+  yellow (connecting), red (unreachable).
+- Update check against the GitHub Releases API from the About window (notify-only; you
+  download and install updates yourself).
+
+### Changed
+- Station lineup is now **13 SomaFM channels + Nightwave Plaza** (all verified to actually
+  stream). New channels: Space Station Soma, Sonic Universe, The Trip, Fluid, Secret Agent,
+  Lush, and Nightwave Plaza.
+- About is now a custom window (app icon, version, tagline, GitHub + Check for Updates
+  buttons) instead of the standard macOS panel.
+- Builds are signed with a stable self-signed certificate when available, falling back to
+  ad-hoc so third-party builds still work.
+
+### Removed
+- Radio Paradise and NTS Mixtapes. Their CDNs accept the connection but don't deliver audio
+  to AVPlayer from some regions (the stream stays silent), so they were replaced with
+  stations confirmed to play.
+
+### Fixed
+- Real-playback detector no longer treats a static start buffer as playback, so a station
+  that connects but never streams is correctly shown as failed instead of falsely "playing".
+
 ## [0.1.0] — 2026-07-03
 
 First public release.

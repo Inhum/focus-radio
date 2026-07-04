@@ -7,7 +7,7 @@
 <h1 align="center">Focus Radio</h1>
 
 <p align="center">
-  A tiny macOS menu-bar radio player for deep-work sessions — SomaFM, Radio Paradise, NTS.
+  A tiny macOS menu-bar radio player for deep-work sessions — SomaFM and Nightwave Plaza.
 </p>
 
 <p align="center">
@@ -19,20 +19,23 @@
 ---
 
 Focus Radio lives in the menu bar and streams 14 curated stations for background listening:
-ambient, drone, mellow, downtempo, spiritual jazz. No accounts, no ads, no music library —
+ambient, space, jazz, lounge, downtempo, vaporwave. No accounts, no ads, no music library —
 click, pick a station, get back to work.
 
 ## Features
 
 - **Menu-bar only.** An animated equalizer icon and a compact popover — no Dock icon, no
   window management.
-- **14 stations, three providers.** SomaFM (7 ambient / space / IDM / chillout channels),
-  Radio Paradise (Mellow / Main / Global), NTS Mixtapes (Slow Focus / Low Key / Sheet Music
-  / Expansions).
-- **Fresh URLs on launch.** SomaFM `.pls` playlists are refreshed at startup so you always
-  get a working mirror.
+- **14 curated stations.** 13 SomaFM channels (ambient, space, IDM, jazz, lounge, chillout)
+  plus Nightwave Plaza (vaporwave / lo-fi). Every station is verified to actually stream, not
+  just connect.
+- **Station health indicator.** A colored dot next to the status line — green (playing),
+  yellow (connecting), red (unreachable) — so you see at a glance if a stream isn't responding.
+- **Bilingual.** English and Russian UI, chosen automatically by your system language.
+- **Update check.** From the About window, an optional check against GitHub Releases —
+  notify-only, no background downloads.
 - **Robust fallback.** Per-URL watchdog → next URL → hardcoded snapshot → whole-station
-  retry. Real-playback detection (buffer, bytes, `currentTime`) rather than trusting
+  retry. Real-playback detection (bytes, `currentTime`) rather than trusting
   `timeControlStatus` alone.
 - **System integration.** Registers with `MPRemoteCommandCenter`, so the physical
   Play/Pause key and the macOS Now Playing card work while a station is streaming.
@@ -102,7 +105,7 @@ details and how to report vulnerabilities.
 ## Stations
 
 Names and URLs of stations belong to their broadcasters. Focus Radio is an independent
-client and is not affiliated with SomaFM, Radio Paradise, or NTS. If you enjoy any of
+client and is not affiliated with SomaFM or Nightwave Plaza. If you enjoy any of
 these stations, please support them directly — they're small, ad-free, listener-funded
 operations.
 

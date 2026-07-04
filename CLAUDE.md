@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Что это
 
-**Focus Radio** — однофайловое меню-бар приложение для macOS (AppKit + AVFoundation + MediaPlayer). Воспроизводит онлайн-радио для фокусной работы. 14 станций сгруппированы по провайдерам (SomaFM / Radio Paradise / NTS Mixtapes). SomaFM URL обновляются на старте через `.pls`-файлы.
+**Focus Radio** — однофайловое меню-бар приложение для macOS (AppKit + AVFoundation + MediaPlayer). Воспроизводит онлайн-радио для фокусной работы. 14 станций: 13 каналов SomaFM + Nightwave Plaza. Radio Paradise и NTS убраны — из RU их глушит гео-блок CDN (см. «Заметки по URL»). URL первых 7 SomaFM-станций обновляются на старте через `.pls`; остальные — со статическими зеркалами ice4/ice6/ice2.
 
 Весь код лежит в `radio.swift` (единственный source-файл). Всё остальное вокруг — обвязка `.app`-бандла и открытого репозитория (Info.plist, скрипты, шаблоны GitHub).
 
@@ -47,6 +47,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Закрытие поповера в `.accessory`-приложении:** `popover.behavior = .transient` *не* закрывает окно при клике в другом приложении или по рабочему столу — только при кликах внутри своего процесса. Фикс — глобальный `NSEvent.addGlobalMonitorForEvents` на `.leftMouseDown`/`.rightMouseDown`, ставится в `togglePopover` при показе и снимается в `popoverDidClose`. Не упрощать обратно к одному `.transient`: визуально работает в окне Xcode, ломается в реальном использовании.
 - **Media keys / Now Playing:** `setupMediaControls` регистрирует `togglePlayPause`/`play`/`pause` в `MPRemoteCommandCenter`, а `updateNowPlaying(playing:)` пишет/сбрасывает `MPNowPlayingInfoCenter.default().nowPlayingInfo` при старте реального воспроизведения (`declaredPlaying = true`) и в `stopPlaying`. macOS маршрутизирует физическую Play/Pause клавишу тому приложению, чья карточка сейчас в Now Playing — то есть нам, пока играем. Если забыть сбросить `nowPlayingInfo` в `stopPlaying`, система будет считать, что мы всё ещё играем, и кнопка будет доставаться нам даже когда стоим на паузе.
 - **Персистенс через `UserDefaults`:** ключи `focusRadio.stationIdx` (Int) и `focusRadio.volume` (Float). Сохраняем в `selectStation` и `volumeChanged`; загружаем в `applicationDidFinishLaunching` **до** создания UI (но после раннего возврата из test-режимов, чтобы `--test-all` не завёлся с прошлой громкостью 0.05).
+- **Локализация (en/ru):** все UI-строки идут через `L("ключ", args…)` (обёртка над `NSLocalizedString`); значения — в `Resources/{en,ru}.lproj/Localizable.strings`. `build.sh` копирует `*.lproj` в бандл, `Info.plist` объявляет `CFBundleLocalizations`. Язык выбирает система. Новую строку добавлять **в оба** файла с одним ключом; названия станций/провайдеров не локализуются (имена собственные).
+- **Индикатор здоровья станции:** `setStatus(text, health)` пишет и текст статуса, и цвет кружка `statusDot` (`.connecting` жёлтый / `.playing` зелёный / `.failed` красный / `.idle` скрыт) — паттерн из Voica. Все точки установки статуса идут через него, не через `statusLabel.stringValue` напрямую.
+- **Проверка обновлений (`Updater`):** анонимный запрос к GitHub Releases API (`/releases/latest`), semver-сравнение с `CFBundleShortVersionString`. Тихая проверка при старте кладёт результат в `availableUpdate` (подсказка в статусе, если стоим); в окне About — кнопка «Проверить обновления», которая при находке превращается в «Скачать <версия>» и открывает страницу релиза. Только уведомление — скачивает пользователь сам.
 
 ## Диагностика
 
@@ -54,9 +57,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Сетевая нестабильность Icecast-серверов — реальная причина части провалов в `--test-all`; одни и те же URL иногда не запускаются даже через отдельный `AVPlayer` вне нашего кода.
 
-**Известные мёртвые URL (по логам от 2026-05):**
-- `stream.radioparadise.com/global-128` — сервер отдаёт `audio/aac`, но AVPlayer получает `bytes=0` на протяжении всех 12 с воспроизведения.
-- `stream-mixtape-geo.ntslive.net/mixtape{,2,3,35}` — CDN редиректит (302) на HTML-страницу (геоблок). Non-geo вариант `stream-mixtape.ntslive.net` — DNS не существует.
+**Заметки по URL (аудит 2026-07):**
+- **RP/NTS не играют, SomaFM играет — вероятно, гео + путь `mediaserverd`.** В AVPlayer Radio Paradise и NTS доходят до `status=2`, но `currentTime()` замирает на `0.0` (нет байт) и на сыром Icecast, и на **HLS** (`.../hls.m3u8`) — значит дело не в формате, а в сетевом пути. При этом `curl` с той же машины (через Tailscale exit-node, egress US) тянет их аудио нормально. Ведущая версия: AVPlayer стримит через `mediaserverd`, чей трафик идёт **мимо exit-node** (напрямую), поэтому упирается в гео-ограничение RP/NTS, а `curl` (через US-выход) — нет. Проверка: открыть URL в QuickTime (та же AVFoundation) — если тоже виснет, а Safari играет, версия верна. Приложение это не лечит (инвариант: только системные фреймворки).
+- **Ложный «зелёный» в `--test-all` (исправлено).** Детектор засчитывал `loadedTimeRanges.duration > 0.5` (стартовый буфер) как воспроизведение, из-за чего RP/NTS давали `played=true` при `bytes=0 t=0.0`. Признак настоящей игры — рост `currentTime`/`numberOfBytesTransferred`, не статический буфер. SomaFM PASS, RP/NTS честно FAIL.
+- **NTS Mixtapes переехали на radiomast.** `stream-mixtape-geo.ntslive.net/mixtape{,2,3,35}` двойным 302-редиректом (через `streams.radiomast.io/<uuid>`, промежуточный `text/html`) ведут на MP3-стрим `audio-edge-*.radiomast.io`. В `stations` прямой `streams.radiomast.io/<uuid>` стоит первым (правильный современный эндпоинт), ntslive-URL — фолбэком.
 
 ## Устройство репозитория
 
