@@ -43,7 +43,17 @@ ambient, drone, mellow, downtempo, spiritual jazz. Без аккаунтов, б
 
 ## Скриншоты
 
-<!-- Добавить docs/popover.png и docs/menubar.png до первого релиза. -->
+Живёт в меню-баре — иконка анимируется, пока станция играет:
+
+![Иконка в меню-баре](docs/menubar.png)
+
+Клик по ней открывает список станций, play/pause и громкость:
+
+![Поповер](docs/popover.png)
+
+Панель About с версией, лицензией и ссылкой на репозиторий:
+
+![About](docs/about.png)
 
 ## Установка
 

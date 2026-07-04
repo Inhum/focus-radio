@@ -42,7 +42,17 @@ click, pick a station, get back to work.
 
 ## Screenshots
 
-<!-- Add docs/popover.png and docs/menubar.png before the first release. -->
+Lives in the menu bar — the icon animates while a station is playing:
+
+![Menu-bar icon](docs/menubar.png)
+
+Click it for the station picker, play/pause, and volume:
+
+![Popover](docs/popover.png)
+
+About panel with version, license, and repository link:
+
+![About](docs/about.png)
 
 ## Install
 
