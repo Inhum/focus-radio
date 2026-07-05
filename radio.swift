@@ -516,11 +516,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
             return
         }
 
-        // Версию и билд берём из Info.plist бандла — так же, как их показывала
-        // стандартная панель («Version 0.1.0 (1)»).
+        // Маркетинговую версию берём из Info.plist. Номер сборки (CFBundleVersion) не
+        // показываем — мы не в App Store, одна сборка на версию, скобки только шумят.
         let info = Bundle.main.infoDictionary
         let short = info?["CFBundleShortVersionString"] as? String ?? "?"
-        let build = info?["CFBundleVersion"] as? String ?? "?"
 
         let content = NSView(frame: NSRect(x: 0, y: 0, width: 340, height: 344))
 
@@ -536,7 +535,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         name.frame = NSRect(x: 0, y: 202, width: 340, height: 24)
         content.addSubview(name)
 
-        let version = NSTextField(labelWithString: L("about.version", short, build))
+        let version = NSTextField(labelWithString: L("about.version", short))
         version.font = NSFont.systemFont(ofSize: 12)
         version.textColor = .secondaryLabelColor
         version.alignment = .center

@@ -15,7 +15,7 @@
 
 /* Окно «О программе» */
 "about.windowTitle"      = "О программе Focus Radio";
-"about.version"          = "Версия %@ (%@)";
+"about.version"          = "Версия %@";
 "about.tagline"          = "Онлайн-радио для фокусной работы";
 "about.github"           = "GitHub";
 "about.copyright"        = "© 2026 Иван Ушаков · Лицензия MIT";

@@ -15,7 +15,7 @@
 
 /* About window */
 "about.windowTitle"      = "About Focus Radio";
-"about.version"          = "Version %@ (%@)";
+"about.version"          = "Version %@";
 "about.tagline"          = "Online radio for focused work";
 "about.github"           = "GitHub";
 "about.copyright"        = "© 2026 Ivan Ushakov · MIT License";
