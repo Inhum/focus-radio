@@ -4,6 +4,21 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] — 2026-07-05
+
+### Fixed
+- **Radio Paradise and NTS Mixtapes play again.** They were removed in 0.2.0 after they
+  connected but produced no audio — mistaken for a regional CDN block. The real cause was a
+  local player setting (`automaticallyWaitsToMinimizeStalling = false`) that started playback
+  before enough buffer and stalled at 0:00 on those streams; the same URLs played fine in
+  QuickTime the whole time. Restored the default (`true`) and the stations.
+
+### Changed
+- Station lineup is now **18 across four providers**: SomaFM (10), Radio Paradise (3), NTS
+  Mixtapes (4), Nightwave Plaza (1) — the original set plus Space Station Soma, Sonic Universe,
+  The Trip, and Nightwave Plaza.
+- Larger stream watchdog (12 s MP3 / 16 s AAC) to accommodate buffer-first playback.
+
 ## [0.2.0] — 2026-07-05
 
 ### Added
