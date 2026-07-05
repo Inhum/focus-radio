@@ -68,21 +68,30 @@ var stations: [Station] = [
         urls: ["https://ice4.somafm.com/thetrip-128-mp3",
                "https://ice6.somafm.com/thetrip-128-mp3",
                "https://ice2.somafm.com/thetrip-128-mp3"], plsURL: nil),
-    Station(provider: "SomaFM", name: "Fluid", genre: "instrumental hip-hop",
-        urls: ["https://ice4.somafm.com/fluid-128-mp3",
-               "https://ice6.somafm.com/fluid-128-mp3",
-               "https://ice2.somafm.com/fluid-128-mp3"], plsURL: nil),
-    Station(provider: "SomaFM", name: "Secret Agent", genre: "spy lounge",
-        urls: ["https://ice4.somafm.com/secretagent-128-mp3",
-               "https://ice6.somafm.com/secretagent-128-mp3",
-               "https://ice2.somafm.com/secretagent-128-mp3"], plsURL: nil),
-    Station(provider: "SomaFM", name: "Lush", genre: "vocal chillout",
-        urls: ["https://ice4.somafm.com/lush-128-mp3",
-               "https://ice6.somafm.com/lush-128-mp3",
-               "https://ice2.somafm.com/lush-128-mp3"], plsURL: nil),
+    Station(provider: "Radio Paradise", name: "Mellow Mix", genre: "mellow eclectic",
+        urls: ["https://stream.radioparadise.com/mellow-128"], plsURL: nil),
+    Station(provider: "Radio Paradise", name: "Main Mix",   genre: "eclectic",
+        urls: ["https://stream.radioparadise.com/mp3-128",
+               "https://stream.radioparadise.com/aac-128"],   plsURL: nil),
+    Station(provider: "Radio Paradise", name: "Global Mix", genre: "world",
+        urls: ["https://stream.radioparadise.com/global-128"], plsURL: nil),
 
-    // Nightwave Plaza — независимый vaporwave-поток. Единственный не-SomaFM, прошедший
-    // проверку реальным воспроизведением из RU (RP/NTS/FIP и пр. глушит гео-блок CDN).
+    // NTS переехали на radiomast: прямой streams.radiomast.io/<uuid> первым,
+    // ntslive-URL фолбэком (на случай смены uuid).
+    Station(provider: "NTS Mixtapes", name: "Slow Focus",  genre: "beatless ambient",
+        urls: ["https://streams.radiomast.io/dfc76352-cda6-4a95-85dd-6f6609f83ba2",
+               "https://stream-mixtape-geo.ntslive.net/mixtape"],   plsURL: nil),
+    Station(provider: "NTS Mixtapes", name: "Low Key",     genre: "chill / downtempo",
+        urls: ["https://streams.radiomast.io/de114902-ee1b-441f-91bc-5468d1e77605",
+               "https://stream-mixtape-geo.ntslive.net/mixtape2"],  plsURL: nil),
+    Station(provider: "NTS Mixtapes", name: "Sheet Music", genre: "classical",
+        urls: ["https://streams.radiomast.io/976b6107-859e-4bc5-8d63-d6992431c414",
+               "https://stream-mixtape-geo.ntslive.net/mixtape35"], plsURL: nil),
+    Station(provider: "NTS Mixtapes", name: "Expansions",  genre: "spiritual jazz",
+        urls: ["https://streams.radiomast.io/e4c0a484-140a-4adf-ae72-301280d635ba",
+               "https://stream-mixtape-geo.ntslive.net/mixtape3"],  plsURL: nil),
+
+    // Nightwave Plaza — независимый vaporwave-поток.
     Station(provider: "Nightwave Plaza", name: "Plaza", genre: "vaporwave / lo-fi",
         urls: ["https://radio.plaza.one/mp3"], plsURL: nil),
 ]
@@ -755,7 +764,11 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         let item = AVPlayerItem(url: url)
         let p = AVPlayer(playerItem: item)
-        p.automaticallyWaitsToMinimizeStalling = false
+        // ВАЖНО: true (дефолт). С false плеер начинает играть без достаточного буфера и на
+        // ряде потоков (Radio Paradise, NTS/radiomast) навсегда замирает на currentTime=0 —
+        // те же URL при этом отлично играют в QuickTime (тоже AVFoundation). Раньше это
+        // ошибочно приняли за гео-блок и выпилили станции. Не менять обратно на false.
+        p.automaticallyWaitsToMinimizeStalling = true
         p.volume = volume
         player = p
         currentItem = item
@@ -799,7 +812,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
 
         // Поллинг реального воспроизведения: currentTime должна расти, буфер должен быть непустым.
         let isAAC = urlStr.contains("-aac")
-        let watchdogSec: TimeInterval = isAAC ? 12.0 : 8.0
+        // С automaticallyWaitsToMinimizeStalling=true плеер сперва набирает буфер, потом
+        // играет — старт медленнее, поэтому watchdog щедрее (иначе ложный фоллбэк до старта).
+        let watchdogSec: TimeInterval = isAAC ? 16.0 : 12.0
         let capturedPlayer = p
 
         // Прямой признак реального воспроизведения — байты, переданные через accessLog.
